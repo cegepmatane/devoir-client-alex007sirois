@@ -26,7 +26,7 @@ function Jeu()
 	
 	var BougerSouris = function(evenement)
 	{
-		var mousePos = evenement.clientX + ',' + evenement.clientY;
+		var mousePos = 'X: ' + evenement.clientX + ' Y: ' + evenement.clientY;
 		debug.innerHTML = mousePos + '<br>' + debug.innerHTML;
 	}
 	
