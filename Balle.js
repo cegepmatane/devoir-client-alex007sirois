@@ -4,8 +4,8 @@ var Balle = function(scene)
     var balle = this;
 	var cercle=null;
 
-	var vitesse=0;
-	var angle=90;
+	var vitesse;
+	var angle;
 
 	var deplacementX;
 	var deplacementY;

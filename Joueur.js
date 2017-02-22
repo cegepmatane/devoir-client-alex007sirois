@@ -20,9 +20,9 @@ var Joueur = function(scene)
     initialiser();
     
     //ICI c'est public
-    this.rafraichirAnimation =  function(evenement)
+    this.rafraichirAnimation =  function(evenement,ratioX,ratioY)
     {
-		cercle.x = evenement.clientX;
-		cercle.y =evenement.clientY;
+		cercle.x = (evenement.clientX*ratioX)-40;
+		cercle.y =(evenement.clientY*ratioY)-10;
 	}
 }

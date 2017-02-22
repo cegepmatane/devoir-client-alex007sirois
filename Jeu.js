@@ -7,63 +7,56 @@ function Jeu()
 	var joueur1 = null;
 	var joueur2 = null;
 	var collisions = null;
-	var ratioScene = {largeur :1, hauteur : 1};
-	var dimentionScene = {largeur :1, hauteur : 1};
+
+	var ratioX;
+	var ratioY;
 	
+	var canevas;
 	var canevas2D;
 	
 	var debug = document.getElementById("debug");
 	
-	var canevas = document.getElementById('canevas');
-	canevas2D = canevas.getContext('2d');
+	var canevasDiv = document.getElementById('canevasDiv');
 	
 	
 	var initialiserCanevas = function()
   {
-    //On redimensionne le canvas en respectant l'aspect ratio
-    //On vise à remplir l'écran en largeur sans déborder en hauteur
-    //On centre le résultat au milieu de l'écran pour renforcir l'aspect focal du jeu.
-    ratioLargeur = window.innerWidth / canevas.width;
-    ratioHauteur = window.innerHeight / canevas.height;
-    if(ratioHauteur * canevas.height <= window.innerHeight)
-    {
-      canevas.style.width = "100%";
-      canevas.style.left = (canevas.width * ratioLargeur)/2+"px";
-      computedStyle = window.getComputedStyle(canevas);
-      canevasNouvelleHeight = parseInt(computedStyle.getPropertyValue('height').replace("px",""));
-      canevas.style.marginTop = (window.innerHeight - canevasNouvelleHeight) / 2 + "px";
-    }
-    else
-    {
-      canevas.style.width = (canevas.width * ratioLargeur) + "px" ;
-      canevas.style.marginLeft = "-"+ (canevas.width * ratioLargeur)/2+"px";
-    }
-    var body = document.getElementsByTagName("body")[0];
-    body.style.maxHeight = window.innerHeight + "px";
-    body.style.overflow = "hidden";
-    
-    computedStyle = window.getComputedStyle(canevas);
-    canevasNouvelleHeight = parseInt(computedStyle.getPropertyValue('height').replace("px",""));
-    canevasNouvelleWidth = parseInt(computedStyle.getPropertyValue('width').replace("px",""));
-    ratioScene.largeur = canevasNouvelleWidth / canevas.width;
-    ratioScene.hauteur = canevasNouvelleHeight / canevas.height;
-    
-    dimentionScene.largeur = canevas.width;
-    dimentionScene.hauteur = canevas.height ;
-    
+      largeur = 1400;
+			hauteur = 700;
+
+			canevasDiv.innerHTML = "<canvas id='canevas' width='" + largeur + "px' height='" + hauteur + "px'></canvas>";
+
+			canevas = document.getElementById('canevas');
+			canevas2D = canevas.getContext('2d');
+
+			//RecalculCanevas(null);
+			canevas.style.width = "94%";
+			canevas.style.height = "94%";
+
+			canevas.style.marginLeft = "3%";
+			canevas.style.marginTop="1%";
+
+			ratioX = canevas.width / (window.innerWidth*0.94);
+			ratioY = canevas.height / (window.innerHeight*0.94);
   }
+
+	var RecalculCanevas = function(evenement)
+	{
+			ratioX = canevas.width / (window.innerWidth*0.94);
+			ratioY = canevas.height / (window.innerHeight*0.94);
+	}
 
 	var CliquerSouris = function(evenement)
 	{
 		//debug.innerHTML = "click<br>" + debug.innerHTML;
-		alert((evenement.clientX/canevas.width)/ratioLargeur);
+		
 	}
 	
 	var BougerSouris = function(evenement)
 	{
 		//var mousePos = 'X: ' + evenement.clientX + ' Y: ' + evenement.clientY;
 		//debug.innerHTML = mousePos + '<br>' + debug.innerHTML;
-			joueur.rafraichirAnimation(evenement);
+			joueur.rafraichirAnimation(evenement,ratioX,ratioY);
 			
 	}
 
@@ -85,12 +78,14 @@ function Jeu()
 	
 	this.lancer = function()
 	{
+		initialiserCanevas();
+
 		canevas.addEventListener("click", CliquerSouris);
-		canevas.addEventListener('mousemove', BougerSouris);
+		window.addEventListener('mousemove', BougerSouris);
+
+		window.addEventListener("resize", RecalculCanevas);
 
 		window.addEventListener(window.Evenement.arrierePlanFinChargement.type,Dessiner);
-		
-		initialiserCanevas();
 
 		scene = new createjs.Stage(canevas);
 		
