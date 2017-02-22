@@ -9,10 +9,10 @@
 		}
 		
 		@keyframes anim {
-			0%   {border-bottom-color-color: red; transform:rotate(0); left:40px; bottom:40px;}
-			25%  {border-bottom-color: yellow;left:40px; bottom:40px;}
-			50%  {border-bottom-color: blue;right:40px;}
-			100% {border-bottom-color: green;transform:rotate(360deg);right:40px; top:40px;}
+			0%  {border-bottom-color: yellow;left:40px; bottom:40px;}
+			50%  {border-bottom-color: blue;left:40px;top:40px;}
+			75%  {border-bottom-color: rebeccapurple;right:40px; top:40px;}
+			100% {border-bottom-color: green;transform:rotate(360deg);right:40px; bottom:40px;}
 		}
 		
 		#css3
@@ -24,12 +24,37 @@
 			border-bottom : 100px solid orange;
 			position: fixed;
 			animation-name: anim;
-			animation-timing-function:ease-in-out;
+			animation-timing-function:linear;
 			animation-duration: 2s;
 			animation-delay:1s;
 			animation-direction: alternate;
 			animation-iteration-count: infinite;
 			border-radius:20%;
+			visibility:hidden;
+		}
+		html 
+		{
+			height: 100%;
+		}
+
+		#canevas
+		{
+			cursor: none;
+		}
+		body 
+		{
+			position:relative;
+			min-height: 100%;
+			max-height: 100%;
+			height:100%;
+			margin:0;
+			padding:0;
+			background-color:#33AAFF;
+		}
+
+		#debug
+		{
+			visibility:hidden;
 		}
 	</style>
 
@@ -37,7 +62,7 @@
         <meta charset="utf-8">
         <title>Jeu</title>
     </head>
-    <canvas id="canvas" height="800" width="1400"></canvas>
+    <canvas id="canevas" height="1200" width="1900"></canvas>
 	
 	<div id="css3"></div>
 	La pizza arc-en-ciel de l'espace!

@@ -24,7 +24,7 @@ var ArrierePlan = function(scene)
             
       imageForetMontagne.onload = function()
       {
-        paysageMontagne.graphics.beginBitmapFill(imageForetMontagne,"repeat", matriceMontagne).drawRect(0,0,1400,800).endStroke();
+        paysageMontagne.graphics.beginBitmapFill(imageForetMontagne,"repeat", matriceMontagne).drawRect(0,0,canevas.width,canevas.height).endStroke();
         nombreImagesChargees++;
       }
       imageForetMontagne.src = "paysage-arriere.png";
