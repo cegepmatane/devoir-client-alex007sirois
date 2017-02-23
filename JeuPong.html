@@ -9,38 +9,41 @@
 		}
 		
 		@keyframes anim {
-			0%  {border-bottom-color: yellow;left:40px; bottom:40px;}
-			50%  {border-bottom-color: blue;left:40px;top:40px;}
-			75%  {border-bottom-color: rebeccapurple;right:40px; top:40px;}
-			100% {border-bottom-color: green;transform:rotate(360deg);right:40px; bottom:40px;}
+			0% {background-color: #FF0000;color:#00FFFF}
+			20% {background-color: #FF7F00;color:#0080FF}
+			35%  {background-color: #FFFF00;color:#0000FF}
+			50% {background-color: #00FF00;color:#FF00FF}
+			65% {background-color: #0000FF;color:#FFFF00}
+			80% {background-color: #4B0082;color:#B4FF7D}
+			100% {background-color: #9400D3;color:#6BFF2C}
 		}
 		
-		#css3
+		#vitesse
 		{
-			width         : 0;
-			height        : 0;
-			border-left   : 70px solid transparent;
-			border-right  : 50px solid transparent;  
-			border-bottom : 100px solid orange;
+			max-width:5%;
 			position: fixed;
+			border-radius:100%;
+			top:0px;
+			margin-left:1px;
+			font-size:4.7vw;
+
 			animation-name: anim;
 			animation-timing-function:linear;
-			animation-duration: 2s;
+			animation-duration: 5s;
 			animation-delay:1s;
-			animation-direction: alternate;
 			animation-iteration-count: infinite;
-			border-radius:20%;
-			visibility:hidden;
+			animation-direction:alternate;
 		}
+
 		html 
 		{
 			height: 100%;
 		}
 
-		/*#canevas
+		#canevas
 		{
 			cursor: none;
-		}*/
+		}
 		body 
 		{
 			position:relative;
@@ -50,34 +53,92 @@
 			margin:0;
 			padding:0;
 			background-color:#33AAFF;
+			overflow:hidden;
 		}
 
-		#debug
+		/*#debug
 		{
 			visibility:hidden;
+		}*/
+		@keyframes particleAnimation
+		{
+			from {
+				left: -100px;
+			}
+			to {
+				left: calc( 100% + 100px );
+			}
+		}
+
+		.p{
+		position:fixed;
+		left:0px;
+		top:50px;
+		width:1px;
+		height:1px;
+		background-color:white;
+		position:fixed;
+		animation-name:particleAnimation;
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
+		}
+		.p::before{
+		position:absolute;
+		display:block;
+		content:"";
+		width:100px;
+		right:1px;
+		top:0px;
+		height:1px;
+		background: linear-gradient(to right, rgba(0,0,0,0) 0%,rgba(255,255,255,0.4) 100%); 
+		}
+		.p-1{
+		animation-duration:10s;
+		}
+		.p-2{
+		animation-duration:5s;
+		top:60%;
+		}
+		.p-3{
+		animation-duration:7s;
+		top:20%;
+		}
+		.p-4{
+		animation-duration:20s;
+		top:90%;
+		}
+		.p-5{
+		animation-duration:30s;
+		top:40%;
 		}
 	</style>
-
+	
+	
     <head>
         <meta charset="utf-8">
         <title>Jeu</title>
     </head>
-    <div id="canevasDiv"></div>
+    <div id="canevasDiv" ></div>
+
+	<div class="p p-1"></div>
+    <div class="p p-2"></div>
+    <div class="p p-3"></div>
+	<div class="p p-4"></div>
+    <div class="p p-5"></div>
 	
-	<div id="css3"></div>
-	<div>La pizza arc-en-ciel de l'espace!
-	
-	<a href="Fin.html"><button type="button" >Fin!</button></a></div>
+	<div id="vitesse"></div>
+	<div><a href="Fin.html"><button type="button" >Fin!</button></a></div>
 	
 	<div id="debug"> </div>
 	
 	<script type="text/javascript" src="easeljs-0.8.2.min.js"></script>
+
+	<script type="text/javascript" src="Calculs.js"></script>
 	
 	<script type="text/javascript" src="Balle.js"></script>
-    <script type="text/javascript" src="Collisions.js"></script>
     <script type="text/javascript" src="Joueur.js"></script>
     <script type="text/javascript" src="ArrierePlan.js"></script>
-    <script type="text/javascript" src="Terrain.js"></script>
+	<script type="text/javascript" src="Collisions.js"></script>
 
 	<script type="text/javascript" src="Jeu.js"></script>
 </html>

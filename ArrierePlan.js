@@ -56,16 +56,16 @@ var ArrierePlan = function(scene)
     initialiser();
     
     //ICI c'est public
-    this.rafraichirAnimation =  function(evenement)
+    this.rafraichirAnimation =  function(evenement, vitesse)
     {
-        matriceMontagne.translate(-ArrierePlan.Configuration.vitesseMontagne,0);
-	}
+        matriceMontagne.translate(-Math.sqrt(vitesse),Math.pow(vitesse, 1/3));
+	  }
 
 ArrierePlan.Configuration = 
 {
-  images : {
+  images : 
+  {
     imageForetMontagne : "paysage-arriere.png"
-  },
-  vitesseMontagne : 2
+  }
 }
 }
