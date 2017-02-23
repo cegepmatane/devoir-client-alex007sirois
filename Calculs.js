@@ -30,3 +30,18 @@ function pythagore(a,b)
     
     return c;
 }
+
+function traiterAngle(angle)
+{
+	while(angle>(2*pi))
+	{
+		angle-=2*pi;
+	}
+
+	while(angle<0)
+	{
+		angle+=2*pi;
+	}
+
+	return angle;
+}

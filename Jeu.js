@@ -5,7 +5,7 @@ function Jeu()
 	var balle = null;
 	var terrain = null;
 	var joueur1 = null;
-	var joueur2 = null;
+	//var joueur2 = null;
 	var collisions = null;
 
 	var vitesseBalle;
@@ -21,24 +21,29 @@ function Jeu()
 	
 	
 	var initialiserCanevas = function()
-  {
-      largeur = 2000;
-			hauteur = 1000;
+  	{
+    	largeur = 2000;
+		hauteur = 1000;
 
-			canevasDiv.innerHTML = "<canvas id='canevas' oncontextmenu='return false'  width='" + largeur + "px' height='" + hauteur + "px'></canvas>";
-			canevas = document.getElementById('canevas');
+		canevasDiv.innerHTML = "<canvas id='canevas' oncontextmenu='return false'  width='" + largeur + "px' height='" + hauteur + "px'></canvas>";
+		canevas = document.getElementById('canevas');
 
 			//RecalculCanevas(null);
-			canevas.style.width = "94%";
+		canevas.style.width = "94%";
 
-			canevas.style.marginLeft = "5%";
-			canevas.style.marginTop="1%";
+		canevas.style.marginLeft = "5%";
+		canevas.style.marginTop="1%";
 
-			informationCanevas=canevas.getBoundingClientRect();
+		informationCanevas=canevas.getBoundingClientRect();
 
-			ratioX = canevas.width / informationCanevas.width;
-			ratioY = canevas.height / informationCanevas.height;
-  }
+		ratioX = canevas.width / informationCanevas.width;
+		ratioY = canevas.height / informationCanevas.height;
+	}
+
+	this.partieTerminee = function()
+	{
+		balle.reinitialiser();
+	}
 
 	var RecalculCanevas = function(evenement)
 	{
@@ -73,9 +78,9 @@ function Jeu()
 
 		balle = new Balle(scene);
 		joueur1 = new Joueur(scene, false);
-		joueur2 = new Joueur(scene, true);
+		//joueur2 = new Joueur(scene, true);
 
-		collisions = new Collisions(balle, joueur1, joueur2);
+		collisions = new Collisions(jeu,balle, joueur1/*, joueur2*/);
 
 		createjs.Ticker.addEventListener("tick", rafraichirAnimation);
 	}
@@ -98,7 +103,7 @@ function Jeu()
 			arrierePlan.rafraichirAnimation(evenement, vitesseBalle);
 			balle.rafraichirAnimation(evenement);
 
-			collisions.testerCollisions();
+			collisions.testerCollisions(true, true, false);
 
 			scene.update(evenement);
 	  }
@@ -121,8 +126,11 @@ function Jeu()
 		arrierePlan = new ArrierePlan(scene);
 
 		createjs.Ticker.setInterval(1000/60);
+		createjs.Ticker.setFPS(60);
 	}
 }
+
+
 
 Jeu.Evenement =
 {

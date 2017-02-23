@@ -4,12 +4,15 @@ var Joueur = function(scene, robot)
     var joueur = this;
 
 	var cercle=null;
-	var explosion=null;
+
+	var delais;
+	var retirer;
 
 	var peutExploser;
+	var explose;
 
-	delaisExplosion=1800;
-	dureeExplosion=750;
+	delaisExplosion=2000;
+	dureeExplosion=800;
     
     //Constructeur parce qu'il est appel� inline � la fin...
     var initialiser = function()
@@ -18,11 +21,11 @@ var Joueur = function(scene, robot)
 		
 		if(robot!=true)
 		{
-			cercle.graphics.beginFill("Red").drawCircle(0,0, 25);
+			cercle.graphics.beginFill("Red").drawCircle(0,0, 25).endFill();
 		}
 		else
 		{
-			cercle.graphics.beginFill("Purple").drawCircle(0,0, 25);
+			cercle.graphics.beginFill("Purple").drawCircle(0,0, 25).endFill();
 
 			cercle.x=canevas.width-100;
 			cercle.y=canevas.height/2;
@@ -35,11 +38,28 @@ var Joueur = function(scene, robot)
     //constructeur
     initialiser();
 
+	this.delayerExplosion = function()
+	{
+		if(!explose)
+		{
+			clearTimeout(delais);
+			peutExploser=true;
+			cercle.graphics.clear().beginFill("Red").drawCircle(0, 0, 25).endFill();
+		}
+	}
+
 	this.retirerExplosion = function()
 	{
-		scene.removeChild(explosion);
-		explosion=null;
-		setTimeout(function(){ peutExploser=true; }, delaisExplosion);
+		if(explose)
+		{
+			clearTimeout(retirer);
+
+			explose=false;
+
+			cercle.graphics.clear().beginFill("Yellow").drawCircle(0, 0, 25).endFill();
+
+			delais=setTimeout(joueur.delayerExplosion, delaisExplosion);
+		}
 	}
 
     //ICI c'est public
@@ -54,12 +74,6 @@ var Joueur = function(scene, robot)
 		{
 			
 		}
-
-		if(explosion!=null)
-		{
-			explosion.x = cercle.x;
-			explosion.y = cercle.y;
-		}
 	}
 
 	this.exploser =  function(evenement,ratioX,ratioY)
@@ -67,22 +81,17 @@ var Joueur = function(scene, robot)
 		if(peutExploser!=false)
 		{
 			peutExploser=false;
-			
+			explose=true;
 
-			explosion = new createjs.Shape();
-			explosion.graphics.beginFill("Orange").drawCircle(0, 0, 50);
+			cercle.graphics.clear().beginFill("Orange").drawCircle(0, 0, 50).endFill();
 
-			explosion.x = cercle.x;
-			explosion.y = cercle.y;
 
-			scene.addChild(explosion);
-
-			setTimeout(joueur.retirerExplosion, dureeExplosion);
+			retirer=setTimeout(joueur.retirerExplosion, dureeExplosion);
 		}
 	}
 
 	this.getInformations = function()
 	{
-		return {x:cercle.x, y:cercle.y, modeExplosion:explosion!=null/*, modeGlace:false*/};
+		return {x:cercle.x, y:cercle.y, modeExplosion:explose/*, modeGlace:false*/};
 	}
 }

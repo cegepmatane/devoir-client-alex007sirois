@@ -14,9 +14,9 @@ var Balle = function(scene)
 	var vitesseHTML
 
 	vitesseDepart = 5;
-	acceleration = 3;
+	acceleration = 1/2;
 
-	tempsImmunite = 500;
+	tempsImmunite = 400;
 	pi=Math.PI;
     
     //Constructeur parce qu'il est appel� inline � la fin...
@@ -52,6 +52,13 @@ var Balle = function(scene)
     
     //constructeur
     initialiser();
+
+	this.reinitialiser = function()
+	{
+		scene.removeChild(cercle);
+		cercle=null;
+		initialiser();
+	}
     
     //ICI c'est public
     this.rafraichirAnimation =  function(evenement)
@@ -78,20 +85,22 @@ var Balle = function(scene)
 
 			angle=Math.atan(deplacementY/deplacementX);
 
+			if(x < cercle.x)
+				angle+=pi;
+
 			var angleHypothenus=Math.atan((cercle.y-y)/(cercle.x-x));
 
-			if(x > cercle.x)
+			if(x < cercle.x)
 				angleHypothenus+=pi;
+
+			angleHypothenus=traiterAngle(angleHypothenus);
+			angle=traiterAngle(angle);
 			
 			angle=2*angleHypothenus+angle;
 
-			if(angle>2*pi)
-				angle-=2*pi;
+			angle=traiterAngle(angle);
 
-			if(angle<0)
-				angle+=pi;
-
-			vitesse+=Math.floor(Math.pow(vitesse,1/acceleration)+1);
+			vitesse+=Math.floor(Math.pow(vitesse,acceleration)+1);
 
 			vitesseHTML.innerHTML = vitesse;
 			window.dispatchEvent(window.Evenement.changementVitesse);
@@ -102,6 +111,6 @@ var Balle = function(scene)
 
 	this.getInformations = function()
 	{
-		return {x :cercle.x, y : cercle.y/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY*/};
+		return {x :cercle.x, y : cercle.y/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
 	}
 }

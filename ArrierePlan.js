@@ -8,9 +8,13 @@ var ArrierePlan = function(scene)
     
     var arrierePlanConteneur = new createjs.Container();
     
-    var matriceMontagne = new createjs.Matrix2D();
-    var paysageMontagne = new createjs.Shape();
-    var imageForetMontagne = new Image();
+    var matriceEtoiles = new createjs.Matrix2D();
+    var paysageEtoiles = new createjs.Shape();
+    var imageEtoiles = new Image();
+
+    var matriceEspace = new createjs.Matrix2D();
+    var paysageEspace = new createjs.Shape();
+    var imageEspace = new Image();
 
     //Cet �v�nement ne peut pas �tre d�clench� hors de cette fonction
     var chargementCompletArrierePlan = document.createEvent('Event');
@@ -22,18 +26,27 @@ var ArrierePlan = function(scene)
     {
       //http://www.crockford.com/javascript/private.html
             
-      imageForetMontagne.onload = function()
+      imageEtoiles.onload = function()
       {
-        paysageMontagne.graphics.beginBitmapFill(imageForetMontagne,"repeat", matriceMontagne).drawRect(0,0,canevas.width,canevas.height).endStroke();
+        paysageEtoiles.graphics.beginBitmapFill(imageEtoiles,"repeat", matriceEtoiles).drawRect(0,0,canevas.width,canevas.height).endStroke();
         nombreImagesChargees++;
       }
-      imageForetMontagne.src = "paysage-arriere.png";
+      imageEtoiles.src = "paysage-arriere2.png";
+
+      imageEspace.onload = function()
+      {
+        paysageEspace.graphics.beginBitmapFill(imageEspace,"repeat", matriceEspace).drawRect(0,0,canevas.width,canevas.height).endStroke();
+        nombreImagesChargees++;
+      }
+      imageEspace.src = "paysage-arriere1.png";
       
       
 
       var demarrerAnimation = function (evenement)
       {
-        arrierePlanConteneur.addChild(paysageMontagne)
+        
+        arrierePlanConteneur.addChild(paysageEspace);
+        arrierePlanConteneur.addChild(paysageEtoiles);
         
         scene.addChild(arrierePlanConteneur);
       }
@@ -58,14 +71,17 @@ var ArrierePlan = function(scene)
     //ICI c'est public
     this.rafraichirAnimation =  function(evenement, vitesse)
     {
-        matriceMontagne.translate(-Math.sqrt(vitesse),Math.pow(vitesse, 1/3));
+        //matriceEtoiles.translate(arrondirAuDecimalVoulu(vitesse/10,2)),arrondirAuDecimalVoulu(Math.pow(vitesse,1/2, 2));
+        matriceEtoiles.translate(vitesse/10,1);
+        matriceEspace.translate(-arrondirAuDecimalVoulu(Math.sqrt(vitesse),2),arrondirAuDecimalVoulu(Math.pow(vitesse, 1/3,2)));
 	  }
 
 ArrierePlan.Configuration = 
 {
   images : 
   {
-    imageForetMontagne : "paysage-arriere.png"
+    imageEtoiles : "paysage-arriere2.png",
+    imageEspace : "paysage-arriere1.png"
   }
 }
 }
