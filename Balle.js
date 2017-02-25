@@ -4,6 +4,10 @@ var Balle = function(scene)
     var balle = this;
 	var cercle=null;
 
+	var spriteBalle=null;
+    var animationBalle = null;
+    var imageBalle = new Image();
+
 	var vitesse;
 	var angle;
 
@@ -22,11 +26,32 @@ var Balle = function(scene)
     //Constructeur parce qu'il est appel� inline � la fin...
     var initialiser = function()
     {
-     	cercle = new createjs.Shape();
-		cercle.graphics.beginFill("White").drawCircle(0, 0, 25);
+		imageBalle.onload = function()
+     	{        
+        	spriteBalle = new createjs.SpriteSheet(
+			{
+				images:[imageBalle],
+				frames:{width:64,height:64},
+				animations:
+				{
+					tourne:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+				}
+			});
+			
+			animationBalle = new createjs.Sprite(spriteBalle, "tourne");
+        	animationBalle.framerate = 10;
 
-		cercle.x = canevas.width/2;
-		cercle.y = canevas.height/2;
+			//animationBalle.scaleX = 50/64 ;
+			//animationBalle.scaleY = 50/64;
+
+			animationBalle.x = canevas.width/2;
+			animationBalle.y = canevas.height/2;
+
+
+			scene.addChild(animationBalle);
+      	}
+
+		imageBalle.src = 'sprite-balle1.png';
         
 		vitesse = vitesseDepart;
 		angle = (Math.random() * pi * 2);
@@ -55,22 +80,22 @@ var Balle = function(scene)
 
 	this.reinitialiser = function()
 	{
-		scene.removeChild(cercle);
-		cercle=null;
+		scene.removeChild(animationBalle);
+		animationBalle=null;
 		initialiser();
 	}
     
     //ICI c'est public
     this.rafraichirAnimation =  function(evenement)
     {
-        cercle.x += deplacementX;
-		cercle.y -= deplacementY;
+        animationBalle.x += deplacementX;
+		animationBalle.y -= deplacementY;
 
-		if(cercle.y<=25 ||cercle.y >= canevas.height-25)
+		if(animationBalle.y<=0 ||animationBalle.y >= canevas.height-50)
 		{
 			deplacementY *= -1;
 		}
-		if(cercle.x<=25 ||cercle.x >= canevas.width-25)
+		if(animationBalle.x<=0 ||animationBalle.x >= canevas.width-50)
 		{
 			deplacementX *= -1;
 		}
@@ -85,12 +110,12 @@ var Balle = function(scene)
 
 			angle=Math.atan(deplacementY/deplacementX);
 
-			if(x < cercle.x)
+			if(x < animationBalle.x)
 				angle+=pi;
 
-			var angleHypothenus=Math.atan((cercle.y-y)/(cercle.x-x));
+			var angleHypothenus=Math.atan((animationBalle.y-y)/(animationBalle.x-x));
 
-			if(x < cercle.x)
+			if(x < animationBalle.x)
 				angleHypothenus+=pi;
 
 			angleHypothenus=traiterAngle(angleHypothenus);
@@ -111,6 +136,6 @@ var Balle = function(scene)
 
 	this.getInformations = function()
 	{
-		return {x :cercle.x, y : cercle.y/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
+		return {x :animationBalle.x+25, y : animationBalle.y+25/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
 	}
 }
