@@ -31,14 +31,14 @@ var ArrierePlan = function(scene)
         paysageEtoiles.graphics.beginBitmapFill(imageEtoiles,"repeat", matriceEtoiles).drawRect(0,0,canevas.width,canevas.height).endStroke();
         nombreImagesChargees++;
       }
-      imageEtoiles.src = "paysage-arriere2.png";
+      imageEtoiles.src = 'ressource/paysage-arriere2.png';
 
       imageEspace.onload = function()
       {
         paysageEspace.graphics.beginBitmapFill(imageEspace,"repeat", matriceEspace).drawRect(0,0,canevas.width,canevas.height).endStroke();
         nombreImagesChargees++;
       }
-      imageEspace.src = "paysage-arriere1.png";
+      imageEspace.src = 'ressource/paysage-arriere1.png';
       
       
 

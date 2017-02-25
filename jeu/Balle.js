@@ -51,7 +51,7 @@ var Balle = function(scene)
 			scene.addChild(animationBalle);
       	}
 
-		imageBalle.src = 'sprite-balle1.png';
+		imageBalle.src = 'ressource/sprite-balle1.png';
         
 		vitesse = vitesseDepart;
 		angle = (Math.random() * pi * 2);
