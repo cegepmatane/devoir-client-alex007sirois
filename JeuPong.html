@@ -12,13 +12,74 @@
     </head>
 
 	<body>
+		
+		  <script type="text/plain" id="page-accueil">
+			
+			<header>
+				<h1>Jeu Pong</h1>
+				<h2>Le jeu le plus trippant du monde</h2>
+			</header>
 
-		<div id="canevasDiv" ></div>
-		
-		<div id="vitesse"></div>
-		<div><a href="#"><button type="button" >Fin!</button></a></div>
-		
-		<div id="debug"> </div>
+			<section id="section-accueil">
+				<p>Veuillez inscrire votre nom puis cliquer sur jouer !</p>
+				<!-- En utilisant post on ne touche pas à l'URL-->
+				<form id="form-acceuil" method="post">
+					<div>
+						<label for="nom">Votre nom de joueur</label>
+						<input type="text" id="nom" name="nom"/>
+					</div>
+
+					<!-- La navigation se fait par l'ajout de #jeu à l'URL
+						Il n'y a pas de rechargement de la page car c'est une technique de navigation
+						HTML dans une même page. -->
+					<a id="bouton-jouer" href="#jeu">Jouer</a>
+				</form>
+			</section>
+
+		</script>
+
+		<script type="text/plain" id="page-jeu">
+			<div id="canevasDiv" ></div>
+			
+			<div id="vitesse"></div>
+
+			<div class="menu">
+				<a href="#accueil">Accueil</a>
+				<a href="#fin-perdu">Fin perdu</a>
+				<a href="#fin-gagne">Fin gagné</a>
+			</div>
+			
+			<div id="debug"> </div>
+		</script>
+
+		<script type="text/plain" id="page-fin">
+			<header>
+				<h1>Jeu super hot</h1>
+				<h2>Le jeu le plus trippant du monde</h2>
+			</header>
+			<section id="section-fin">
+				<div id="resultat">
+					<!-- {_NOM_} et {_MESSAGE_} sont des chaines à remplacer par programmation -->
+					<p>{NOM}</p>
+					<p class="message">{MESSAGE}</p>
+				</div>
+
+				<div id="statistiques">
+
+					<ul id="liste-gagnants">
+						<li>Gagnant 1</li>
+						<li>Gagnant 2</li>
+						<li>Gagnant 3</li>
+						<li>Gagnant 4</li>
+					</ul>
+				</div>
+			</section>
+			<a href="#accueil">Accueil</a>
+		</script>
+
+		<script type="text/javascript" src="vue/AccueilVue.js"></script>
+		<script type="text/javascript" src="vue/JeuVue.js"></script>
+		<script type="text/javascript" src="vue/FinVue.js"></script>
 		
 		<script type="text/javascript" src="jeu/Balle.js"></script>
 		<script type="text/javascript" src="jeu/Joueur.js"></script>

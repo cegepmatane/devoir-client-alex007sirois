@@ -49,10 +49,32 @@
 			margin:0;
 			padding:0;
 			background-color:#33AAFF;
-			overflow:hidden;
 		}
+canvas
+{
+  position:absolute;
+  display:block;
+  /*
+  Pour que le text soit au dessus du canvas
+  */
+  z-index:990;
+}
 
-		/*#debug
-		{
-			visibility:hidden;
-		}*/
+/*
+Définition relative à la navigation
+*/
+a
+{
+  display:block;
+}
+
+.menu
+{
+  position:absolute;
+  font-size:1vw;
+  top:15%;
+  /*
+  Pour que le text soit au dessus du canvas
+  */
+  z-index:999;  
+}

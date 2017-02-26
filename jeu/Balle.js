@@ -2,7 +2,6 @@
 var Balle = function(scene)
 {
     var balle = this;
-	var cercle=null;
 
 	var spriteBalle=null;
     var animationBalle = null;
@@ -22,33 +21,19 @@ var Balle = function(scene)
 
 	tempsImmunite = 400;
 	pi=Math.PI;
+
+	
     
     //Constructeur parce qu'il est appel� inline � la fin...
     var initialiser = function()
     {
+		var chargementCompletBalle = document.createEvent('Event');
+		chargementCompletBalle.initEvent('chargementCompletBalle', true, true);
+		var nombreImagesChargees=0;
+
 		imageBalle.onload = function()
      	{        
-        	spriteBalle = new createjs.SpriteSheet(
-			{
-				images:[imageBalle],
-				frames:{width:64,height:64},
-				animations:
-				{
-					tourne:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
-				}
-			});
-			
-			animationBalle = new createjs.Sprite(spriteBalle, "tourne");
-        	animationBalle.framerate = 10;
-
-			//animationBalle.scaleX = 50/64 ;
-			//animationBalle.scaleY = 50/64;
-
-			animationBalle.x = canevas.width/2;
-			animationBalle.y = canevas.height/2;
-
-
-			scene.addChild(animationBalle);
+			nombreImagesChargees++;
       	}
 
 		imageBalle.src = 'ressource/sprite-balle1.png';
@@ -60,11 +45,46 @@ var Balle = function(scene)
 
 		calculerDeplacements();
 
-		scene.addChild(cercle);
-
 		vitesseHTML=document.getElementById('vitesse');
 		vitesseHTML.innerHTML = vitesse;
 		window.dispatchEvent(window.Evenement.changementVitesse);
+
+		var demarrerAnimation = function(evenemnt)
+		{
+			spriteBalle = new createjs.SpriteSheet(
+			{
+				images:[imageBalle],
+				frames:{width:64,height:64},
+				animations:
+				{
+					tourne:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+				}
+			});
+			animationBalle = new createjs.Sprite(spriteBalle, "tourne");
+        	animationBalle.framerate = 10;
+
+			//animationBalle.scaleX = 50/64 ;
+			//animationBalle.scaleY = 50/64;
+
+			animationBalle.x = canevas.width/2;
+			animationBalle.y = canevas.height/2;
+
+			scene.addChild(animationBalle);
+		}
+
+
+		var validerChargementImage = function(evenement)
+		{ 
+			if(nombreImagesChargees == 1)
+			{
+			window.dispatchEvent(chargementCompletBalle); 
+			createjs.Ticker.removeEventListener("tick", validerChargementImage);
+			window.dispatchEvent(window.Evenement.balleFinChargement);
+			}
+		}
+		
+		window.addEventListener('chargementCompletBalle', demarrerAnimation, false);
+		createjs.Ticker.addEventListener("tick", validerChargementImage);
 	}     
     
 	var calculerDeplacements = function()
@@ -80,9 +100,13 @@ var Balle = function(scene)
 
 	this.reinitialiser = function()
 	{
-		scene.removeChild(animationBalle);
-		animationBalle=null;
-		initialiser();
+		vitesse = vitesseDepart;
+		angle = (Math.random() * pi * 2);
+
+		calculerDeplacements();
+
+		animationBalle.x = canevas.width/2;
+		animationBalle.y = canevas.height/2;
 	}
     
     //ICI c'est public

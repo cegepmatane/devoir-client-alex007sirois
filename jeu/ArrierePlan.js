@@ -16,6 +16,11 @@ var ArrierePlan = function(scene)
     var paysageEspace = new createjs.Shape();
     var imageEspace = new Image();
 
+    var vitesseEspaceH=0;
+    var vitesseEspaceV=0;
+    var vitesseEtoileH=0;
+    var vitesseEtoileV=0;
+
     //Cet �v�nement ne peut pas �tre d�clench� hors de cette fonction
     var chargementCompletArrierePlan = document.createEvent('Event');
     chargementCompletArrierePlan.initEvent('chargementCompletArrierePlan', true, true);
@@ -67,13 +72,22 @@ var ArrierePlan = function(scene)
     
     //constructeur
     initialiser();
+
+    this.changementVitesse = function(vitesse)
+    {
+      vitesseEspaceH=-arrondirAuDecimalVoulu(Math.sqrt(vitesse),2);
+      vitesseEspaceV=arrondirAuDecimalVoulu(Math.pow(vitesse,1/3),2);
+
+      vitesseEtoileH=arrondirAuDecimalVoulu(vitesse/6,2);
+      vitesseEtoileV=-arrondirAuDecimalVoulu(vitesse/10,2);
+    }
     
     //ICI c'est public
-    this.rafraichirAnimation =  function(evenement, vitesse)
+    this.rafraichirAnimation =  function(evenement)
     {
         //matriceEtoiles.translate(arrondirAuDecimalVoulu(vitesse/10,2)),arrondirAuDecimalVoulu(Math.pow(vitesse,1/2, 2));
-        matriceEtoiles.translate(vitesse/10,1);
-        matriceEspace.translate(-arrondirAuDecimalVoulu(Math.sqrt(vitesse),2),arrondirAuDecimalVoulu(Math.pow(vitesse, 1/3,2)));
+        matriceEtoiles.translate(vitesseEtoileH,vitesseEtoileV);
+        matriceEspace.translate(vitesseEspaceH,vitesseEspaceV);
 	  }
 
 ArrierePlan.Configuration = 
