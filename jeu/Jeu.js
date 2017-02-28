@@ -47,48 +47,15 @@ function Jeu()
 		ratioX = canevas.width / informationCanevas.width;
 		ratioY = canevas.height / informationCanevas.height;
 	}
-
-	var recalculCanevas = function(evenement)
-	{
-			informationCanevas=canevas.getBoundingClientRect();
-
-			ratioX = canevas.width / informationCanevas.width;
-			ratioY = canevas.height / informationCanevas.height;
-	}
-
-	var cliquerSouris = function(evenement)
-	{
-		//debug.innerHTML = "click<br>" + debug.innerHTML;
-		if(joueur1!=null)
-		{
-			joueur1.exploser();
-		}
-	}
-	
-	var bougerSouris = function(evenement)
-	{
-		/*var mousePos = 'X: ' + (evenement.clientX - canevas.offsetLeft) + ' Y: ' + (evenement.clientY- canevas.offsetTop);
-		debug.innerHTML = mousePos + '<br>' /*+ debug.innerHTML*/;
-		if(joueur1!=null)
-		{
-			joueur1.bouger(evenement,ratioX,ratioY,informationCanevas);
-		}
-	}
-
-	var retirerExplosion = function(evenement)
-	{
-		if(joueur1!=null)
-		{
-			joueur1.retirerExplosion();
-		}
-	}
 	
 	var rafraichirAnimation = function(evenement)
 	{
 		arrierePlan.rafraichirAnimation(evenement);
 		balle.rafraichirAnimation(evenement);
 
-		collisions.testerCollisions(balle.getCoordonnees(), joueur1.getCoordonnees());
+		coordoneeJoueur1=joueur1.getCoordonnees();
+
+		collisions.testerCollisions(balle.getCoordonnees(), coordoneeJoueur1);
 
 		scene.update(evenement);
 	}
@@ -97,12 +64,12 @@ function Jeu()
 	{
 		initialiserCanevas();
 
-		canevas.addEventListener("mouseup", retirerExplosion);
-		canevas.addEventListener("mousedown", cliquerSouris);
-		canevas.addEventListener('mousemove', bougerSouris);
-		window.addEventListener("resize", recalculCanevas);
+		canevas.addEventListener("mouseup", interpreterEvenementsApplicatifs);
+		canevas.addEventListener("mousedown", interpreterEvenementsApplicatifs);
+		canevas.addEventListener("mousemove", interpreterEvenementsApplicatifs);
+		window.addEventListener("resize", interpreterEvenementsApplicatifs);
 
-		window.addEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
+		window.addEventListener(window.Evenement.arrierePlanFinChargement.type, interpreterEvenementsApplicatifs);
 
 		scene = new createjs.Stage(canevas);
 		arrierePlan = new ArrierePlan(scene);
@@ -111,10 +78,32 @@ function Jeu()
 	}
 
   //Le contexte EST GÉRÉ par cette fonction
-  var interpreterEvenementsApplicatifs = function(evenement)
+	var interpreterEvenementsApplicatifs = function(evenement)
   {
     switch(evenement.type)
-    {
+		{
+			case "mouseup":
+				if (joueur1 != null)
+					joueur1.retirerExplosion();
+				break;	
+
+			case "mousedown":
+				if (joueur1 != null)
+					joueur1.exploser();
+				break;	
+
+			case "mousemove":
+				if (joueur1 != null)
+					joueur1.bouger(evenement, ratioX, ratioY, informationCanevas);
+				break;	
+
+			case "resize":
+				informationCanevas = canevas.getBoundingClientRect();
+
+				ratioX = canevas.width / informationCanevas.width;
+				ratioY = canevas.height / informationCanevas.height;
+				break;
+
 			case window.Evenement.arrierePlanFinChargement.type:
         window.removeEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
 				window.addEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
@@ -130,11 +119,10 @@ function Jeu()
 			break;
 
 			case window.Evenement.mortJoueur1.type:
-				balle.reinitialiser();
+				window.dispatchEvent(window.Evenement.navigationFinEnAction);
 			break;
 
 			case window.Evenement.explosionAvecJoueur1.type:
-				console.log(coordoneeJoueur1.x + " " +coordoneeJoueur1.y);
 				balle.exploser(coordoneeJoueur1.x,coordoneeJoueur1.y)
 			break;
 
@@ -164,20 +152,12 @@ function Jeu()
         vueActive = jeuVue;
         lancer();
       break;
-      case window.Evenement.navigationFinPerdantEnAction.type:
+      case window.Evenement.navigationFinEnAction.type:
         if (vueActive instanceof JeuVue)
         {
           quitterScene();
         }
-        finVue.afficher("perdu", nomJoueur);
-        vueActive = finVue;
-      break;
-      case window.Evenement.navigationFinGagantEnAction.type:
-        if (vueActive instanceof JeuVue)
-        {
-          quitterScene();
-        }
-        finVue.afficher("gagne", nomJoueur);
+        finVue.afficher(nomJoueur, vitesseBalle);
         vueActive = finVue;
       break;
         
@@ -217,11 +197,8 @@ function Jeu()
 		//La seconde évaluation de l'expression régulière (perdu|gagne) est à la position 1 du tableau de résultat succes
 		switch(succes[1])
 		{
-			case "perdu":
-			window.dispatchEvent(window.Evenement.navigationFinPerdantEnAction);  
-			break;        
-			case "gagne":
-			window.dispatchEvent(window.Evenement.navigationFinGagantEnAction);  
+			default:
+			window.dispatchEvent(window.Evenement.navigationFinEnAction);  
 			break;        
 		}
 		//Fait le ménage dans l'URL pour ne pas voir #fin-perdu ou #fin-gagne
@@ -242,8 +219,7 @@ function Jeu()
     window.addEventListener("hashchange", interpreterEvenementsLocation);
     window.addEventListener(window.Evenement.navigationAccueilEnAction.type, interpreterEvenementsApplicatifs, false);
     window.addEventListener(window.Evenement.navigationJeuEnAction.type, interpreterEvenementsApplicatifs, false);
-    window.addEventListener(window.Evenement.navigationFinGagantEnAction.type, interpreterEvenementsApplicatifs, false);
-    window.addEventListener(window.Evenement.navigationFinPerdantEnAction.type, interpreterEvenementsApplicatifs, false);
+    window.addEventListener(window.Evenement.navigationFinEnAction.type, interpreterEvenementsApplicatifs, false);
 
     window.addEventListener(window.Evenement.accueilVueEnregistrerNomJoueurEnAction.type, interpreterEvenementsApplicatifs, false);
     
@@ -258,12 +234,12 @@ function Jeu()
     
     //Désenregistrer l'écoute des événements
     createjs.Ticker.removeEventListener("tick", rafraichirAnimation);
-		canevas.removeEventListener("mouseup", retirerExplosion);
-		canevas.removeEventListener("mousedown", cliquerSouris);
-		canevas.removeEventListener('mousemove', bougerSouris);
-		window.removeEventListener("resize", recalculCanevas);
+		canevas.removeEventListener("mouseup", interpreterEvenementsApplicatifs);
+		canevas.removeEventListener("mousedown", interpreterEvenementsApplicatifs);
+		canevas.removeEventListener('mousemove', interpreterEvenementsApplicatifs);
+		window.removeEventListener("resize", interpreterEvenementsApplicatifs);
 		
-		window.removeEventListener(changementVitesse.type, changerVitesse);
+		window.removeEventListener(window.Evenement.changementVitesse.type, interpreterEvenementsApplicatifs);
   }
 
 	initialiser();
@@ -271,21 +247,25 @@ function Jeu()
 
 Jeu.Evenement =
 {
-		arrierePlanFinChargement : document.createEvent('Event'),
-		balleFinChargement : document.createEvent('Event'),
+	boutonSourisEnAction: document.createEvent('Event'),
+	boutonSourisRelache: document.createEvent('Event'),
+	bougeSouris: document.createEvent('Event'),
+	redimensionnementEcran: document.createEvent('Event'),
+	
+	arrierePlanFinChargement : document.createEvent('Event'),
+	balleFinChargement : document.createEvent('Event'),
 
-		changementVitesse : document.createEvent('Event'),
+	changementVitesse: document.createEvent('Event'),
 
-		mortJoueur1 : document.createEvent('Event'),
-		mortJoueur1 : document.createEvent('Event'),
-		explosionAvecJoueur1 : document.createEvent('Event'),
-		explosionAvecJoueur2 : document.createEvent('Event'),
+	mortJoueur1 : document.createEvent('Event'),
+	mortJoueur1 : document.createEvent('Event'),
+	explosionAvecJoueur1 : document.createEvent('Event'),
+	explosionAvecJoueur2 : document.createEvent('Event'),
 
-		navigationAccueilEnAction : document.createEvent('Event'),
-  	navigationJeuEnAction : document.createEvent('Event'),
-  	navigationFinGagantEnAction : document.createEvent('Event'),
-  	navigationFinPerdantEnAction : document.createEvent('Event'),
-  	accueilVueEnregistrerNomJoueurEnAction : document.createEvent('Event')
+	navigationAccueilEnAction: document.createEvent('Event'),
+  navigationJeuEnAction : document.createEvent('Event'),
+  navigationFinEnAction : document.createEvent('Event'),
+  accueilVueEnregistrerNomJoueurEnAction : document.createEvent('Event')
 }
 
 Jeu.Evenement.initialiser = function()
