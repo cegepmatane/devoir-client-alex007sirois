@@ -1,5 +1,5 @@
 //Rien est public...
-var Joueur = function(scene, robot)
+var Joueur = function(scene)
 {
     var joueur = this;
 
@@ -10,28 +10,17 @@ var Joueur = function(scene, robot)
 
 	var peutExploser;
 	var explose;
-
-	delaisExplosion=2000;
-	dureeExplosion=800;
     
     //Constructeur parce qu'il est appel� inline � la fin...
     var initialiser = function()
     {
      	cercle = new createjs.Shape();
-		
-		if(robot!=true)
-		{
-			cercle.graphics.beginFill("Red").drawCircle(0,0, 25).endFill();
-		}
-		else
-		{
-			cercle.graphics.beginFill("Purple").drawCircle(0,0, 25).endFill();
 
-			cercle.x=canevas.width-100;
-			cercle.y=canevas.height/2;
-		}
+		cercle.graphics.beginFill(Joueur.Configuration.couleurPret).drawCircle(0,0, Joueur.Configuration.grosseur).endFill();
+		
 		scene.addChild(cercle);
 
+		explose=false;
 		peutExploser=true;
 	}
     
@@ -44,7 +33,7 @@ var Joueur = function(scene, robot)
 		{
 			clearTimeout(delais);
 			peutExploser=true;
-			cercle.graphics.clear().beginFill("Red").drawCircle(0, 0, 25).endFill();
+			cercle.graphics.clear().beginFill(Joueur.Configuration.couleurPret).drawCircle(0, 0, Joueur.Configuration.grosseur).endFill();
 		}
 	}
 
@@ -56,42 +45,45 @@ var Joueur = function(scene, robot)
 
 			explose=false;
 
-			cercle.graphics.clear().beginFill("Yellow").drawCircle(0, 0, 25).endFill();
+			cercle.graphics.clear().beginFill(Joueur.Configuration.couleurAttente).drawCircle(0, 0, Joueur.Configuration.grosseur).endFill();
 
-			delais=setTimeout(joueur.delayerExplosion, delaisExplosion);
+			delais=setTimeout(joueur.delayerExplosion, Joueur.Configuration.delaisExplosion);
 		}
 	}
 
     //ICI c'est public
-    this.rafraichirAnimation = function(evenement,ratioX,ratioY)
+    this.bouger = function(evenement,ratioX,ratioY, informationCanevas)
     {	
-		if(robot!=true)
-		{
-			cercle.x = (evenement.clientX - canevas.offsetLeft)*ratioX;
-			cercle.y =(evenement.clientY - canevas.offsetTop)*ratioY;
-		}
-		else
-		{
-			
-		}
+		cercle.x = (evenement.clientX - informationCanevas.left)*ratioX;
+		cercle.y =(evenement.clientY - informationCanevas.top)*ratioY;
 	}
 
-	this.exploser =  function(evenement,ratioX,ratioY)
+	this.exploser =  function()
     {
 		if(peutExploser!=false)
 		{
 			peutExploser=false;
 			explose=true;
 
-			cercle.graphics.clear().beginFill("Orange").drawCircle(0, 0, 50).endFill();
+			cercle.graphics.clear().beginFill(Joueur.Configuration.couleurExplosion).drawCircle(0, 0, Joueur.Configuration.grosseur*2).endFill();
 
 
-			retirer=setTimeout(joueur.retirerExplosion, dureeExplosion);
+			retirer=setTimeout(joueur.retirerExplosion, Joueur.Configuration.dureeExplosion);
 		}
 	}
 
-	this.getInformations = function()
+	this.getCoordonnees = function()
 	{
 		return {x:cercle.x, y:cercle.y, modeExplosion:explose/*, modeGlace:false*/};
 	}
+}
+
+Joueur.Configuration =
+{
+	delaisExplosion:2000,
+	dureeExplosion:800,
+	couleurPret:"Red",
+	couleurAttente:"Yellow",
+	couleurExplosion:"Orange",
+	grosseur:25
 }

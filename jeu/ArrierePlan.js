@@ -1,4 +1,4 @@
-//Rien est public...
+﻿//Rien est public...
 var ArrierePlan = function(scene)
 {
     var arrierePlan = this; //Est un proxy de closure...
@@ -16,10 +16,10 @@ var ArrierePlan = function(scene)
     var paysageEspace = new createjs.Shape();
     var imageEspace = new Image();
 
-    var vitesseEspaceH=0;
-    var vitesseEspaceV=0;
-    var vitesseEtoileH=0;
-    var vitesseEtoileV=0;
+    var vitesseEspaceHorizontal=0;
+    var vitesseEspaceVertical=0;
+    var vitesseEtoilesHorizontal=0;
+    var vitesseEtoilesVertical=0;
 
     //Cet �v�nement ne peut pas �tre d�clench� hors de cette fonction
     var chargementCompletArrierePlan = document.createEvent('Event');
@@ -36,14 +36,14 @@ var ArrierePlan = function(scene)
         paysageEtoiles.graphics.beginBitmapFill(imageEtoiles,"repeat", matriceEtoiles).drawRect(0,0,canevas.width,canevas.height).endStroke();
         nombreImagesChargees++;
       }
-      imageEtoiles.src = 'ressource/paysage-arriere2.png';
+      imageEtoiles.src = ArrierePlan.Configuration.images.imageEtoiles;
 
       imageEspace.onload = function()
       {
         paysageEspace.graphics.beginBitmapFill(imageEspace,"repeat", matriceEspace).drawRect(0,0,canevas.width,canevas.height).endStroke();
         nombreImagesChargees++;
       }
-      imageEspace.src = 'ressource/paysage-arriere1.png';
+      imageEspace.src = ArrierePlan.Configuration.images.imageEspace;
       
       
 
@@ -75,27 +75,29 @@ var ArrierePlan = function(scene)
 
     this.changementVitesse = function(vitesse)
     {
-      vitesseEspaceH=-arrondirAuDecimalVoulu(Math.sqrt(vitesse),2);
-      vitesseEspaceV=arrondirAuDecimalVoulu(Math.pow(vitesse,1/3),2);
+      vitesseEspaceHorizontal=-arrondirAuDecimalVoulu(Math.sqrt(vitesse),2);
+      vitesseEspaceVertical=arrondirAuDecimalVoulu(Math.pow(vitesse,1/3),2);
 
-      vitesseEtoileH=arrondirAuDecimalVoulu(vitesse/6,2);
-      vitesseEtoileV=-arrondirAuDecimalVoulu(vitesse/10,2);
+      vitesseEtoilesHorizontal=arrondirAuDecimalVoulu(vitesse/6,2);
+      vitesseEtoilesertical=-arrondirAuDecimalVoulu(vitesse/10,2);
     }
     
     //ICI c'est public
     this.rafraichirAnimation =  function(evenement)
     {
         //matriceEtoiles.translate(arrondirAuDecimalVoulu(vitesse/10,2)),arrondirAuDecimalVoulu(Math.pow(vitesse,1/2, 2));
-        matriceEtoiles.translate(vitesseEtoileH,vitesseEtoileV);
-        matriceEspace.translate(vitesseEspaceH,vitesseEspaceV);
+        matriceEtoiles.translate(vitesseEtoilesHorizontal,vitesseEtoilesVertical);
+        matriceEspace.translate(vitesseEspaceHorizontal,vitesseEspaceVertical);
 	  }
+
+
+}
 
 ArrierePlan.Configuration = 
 {
   images : 
   {
-    imageEtoiles : "paysage-arriere2.png",
-    imageEspace : "paysage-arriere1.png"
-  }
-}
+    imageEtoiles : "ressource/paysage-arriere2.png",
+    imageEspace : "ressource/paysage-arriere1.png"
+  },
 }

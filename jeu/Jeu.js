@@ -4,7 +4,6 @@ function Jeu()
 {
 	var jeu = this;
 
-
  	var arrierePlan = null;
 	var balle = null;
 	var terrain = null;
@@ -13,11 +12,14 @@ function Jeu()
 	var collisions = null;
 
 	var vitesseBalle;
+	var vitesseHTML;
 
 	var ratioX;
 	var ratioY;
-	var informationCanevas;
 	var canevas;
+	var informationCanevas;
+
+	var coordoneeJoueur1;
 
 	  //Vue
 	var accueilVue = null;
@@ -28,14 +30,10 @@ function Jeu()
 	var nomJoueur = "";
 	
 	var initialiserCanevas = function()
-  	{
-		var debug = document.getElementById("debug");
+  {
 		var canevasDiv = document.getElementById('canevasDiv');
 
-    largeur = 2000;
-		hauteur = 1000;
-
-		canevasDiv.innerHTML = "<canvas id='canevas' oncontextmenu='return false'  width='" + largeur + "px' height='" + hauteur + "px'></canvas>";
+		canevasDiv.innerHTML = "<canvas id='canevas' oncontextmenu='return false'  width='" + Jeu.Configuration.largeur + "px' height='" + Jeu.Configuration.hauteur + "px'></canvas>";
 		canevas = document.getElementById('canevas');
 
 			//RecalculCanevas(null);
@@ -50,12 +48,7 @@ function Jeu()
 		ratioY = canevas.height / informationCanevas.height;
 	}
 
-	this.partieTerminee = function()
-	{
-		balle.reinitialiser();
-	}
-
-	var RecalculCanevas = function(evenement)
+	var recalculCanevas = function(evenement)
 	{
 			informationCanevas=canevas.getBoundingClientRect();
 
@@ -63,88 +56,58 @@ function Jeu()
 			ratioY = canevas.height / informationCanevas.height;
 	}
 
-	var CliquerSouris = function(evenement)
+	var cliquerSouris = function(evenement)
 	{
 		//debug.innerHTML = "click<br>" + debug.innerHTML;
 		if(joueur1!=null)
 		{
-			joueur1.exploser(evenement,ratioX,ratioY);
+			joueur1.exploser();
 		}
 	}
 	
-	var BougerSouris = function(evenement)
+	var bougerSouris = function(evenement)
 	{
 		/*var mousePos = 'X: ' + (evenement.clientX - canevas.offsetLeft) + ' Y: ' + (evenement.clientY- canevas.offsetTop);
 		debug.innerHTML = mousePos + '<br>' /*+ debug.innerHTML*/;
 		if(joueur1!=null)
 		{
-			joueur1.rafraichirAnimation(evenement,ratioX,ratioY);
+			joueur1.bouger(evenement,ratioX,ratioY,informationCanevas);
 		}
 	}
 
-		var DessinerBalle = function(evenement)
-		{
-				window.removeEventListener(window.Evenement.arrierePlanFinChargement.type,Dessiner);
-				window.addEventListener(window.Evenement.balleFinChargement.type,Dessiner);
-				window.addEventListener(window.Evenement.changementVitesse.type, ChangerVitesse);
-				
-				balle = new Balle(scene);
-		}
-
-	var Dessiner = function(evenement)
+	var retirerExplosion = function(evenement)
 	{
-		window.removeEventListener(window.Evenement.balleFinChargement.type,Dessiner);
-
-		joueur1 = new Joueur(scene, false);
-		//joueur2 = new Joueur(scene, true);
-
-		collisions = new Collisions(jeu,balle, joueur1/*, joueur2*/);
-
-		createjs.Ticker.addEventListener("tick", rafraichirAnimation);
-	}
-
-	var ChangerVitesse = function(evenement)
-	{
-			vitesseBalle = document.getElementById('vitesse').innerHTML;
-			arrierePlan.changementVitesse(vitesseBalle);
-	}
-
-	var RetirerExplosion = function(evenement)
-	{
-			if(joueur1!=null)
+		if(joueur1!=null)
 		{
 			joueur1.retirerExplosion();
 		}
 	}
 	
 	var rafraichirAnimation = function(evenement)
-	  {
-			arrierePlan.rafraichirAnimation(evenement);
-			balle.rafraichirAnimation(evenement);
+	{
+		arrierePlan.rafraichirAnimation(evenement);
+		balle.rafraichirAnimation(evenement);
 
-			collisions.testerCollisions(true, true, false);
+		collisions.testerCollisions(balle.getCoordonnees(), joueur1.getCoordonnees());
 
-			scene.update(evenement);
-	  }
+		scene.update(evenement);
+	}
 	
 	var lancer = function()
 	{
 		initialiserCanevas();
 
-		canevas.addEventListener("mouseup", RetirerExplosion);
-		canevas.addEventListener("mousedown", CliquerSouris);
-		canevas.addEventListener('mousemove', BougerSouris);
+		canevas.addEventListener("mouseup", retirerExplosion);
+		canevas.addEventListener("mousedown", cliquerSouris);
+		canevas.addEventListener('mousemove', bougerSouris);
+		window.addEventListener("resize", recalculCanevas);
 
-		window.addEventListener("resize", RecalculCanevas);
-
-		window.addEventListener(window.Evenement.arrierePlanFinChargement.type,DessinerBalle);
+		window.addEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
 
 		scene = new createjs.Stage(canevas);
-		
 		arrierePlan = new ArrierePlan(scene);
 
-		createjs.Ticker.setInterval(1000/60);
-		createjs.Ticker.setFPS(60);
+		createjs.Ticker.setInterval(1000/Jeu.Configuration.FPS);
 	}
 
   //Le contexte EST GÉRÉ par cette fonction
@@ -152,6 +115,41 @@ function Jeu()
   {
     switch(evenement.type)
     {
+			case window.Evenement.arrierePlanFinChargement.type:
+        window.removeEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
+				window.addEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
+				window.addEventListener(window.Evenement.changementVitesse.type, interpreterEvenementsApplicatifs);
+				vitesseHTML=document.getElementById('vitesse');
+				balle = new Balle(scene);
+      break;
+
+			case window.Evenement.changementVitesse.type:
+				vitesseBalle=balle.getVitesse();
+				vitesseHTML.innerHTML=vitesseBalle;
+				arrierePlan.changementVitesse(vitesseBalle);
+			break;
+
+			case window.Evenement.mortJoueur1.type:
+				balle.reinitialiser();
+			break;
+
+			case window.Evenement.explosionAvecJoueur1.type:
+				console.log(coordoneeJoueur1.x + " " +coordoneeJoueur1.y);
+				balle.exploser(coordoneeJoueur1.x,coordoneeJoueur1.y)
+			break;
+
+			case window.Evenement.balleFinChargement.type:
+				window.removeEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
+				joueur1 = new Joueur(scene);
+				//joueur2 = new Joueur(scene, true);
+				coordoneeJoueur1=joueur1.getCoordonnees();
+				window.addEventListener(window.Evenement.mortJoueur1.type, interpreterEvenementsApplicatifs);
+				//	window.addEventListener(mortJoueur2, recalculCanevas);
+				window.addEventListener(window.Evenement.explosionAvecJoueur1.type, interpreterEvenementsApplicatifs);
+				//window.addEventListener(explosionAvecJoueur1, recalculCanevas);
+				collisions = new Collisions(jeu,balle, joueur1/*, joueur2*/);
+				createjs.Ticker.addEventListener("tick", rafraichirAnimation);
+			break;
       //Gestion de la navigation entre les écrans
       case window.Evenement.navigationAccueilEnAction.type:
         if (vueActive instanceof JeuVue)
@@ -260,10 +258,12 @@ function Jeu()
     
     //Désenregistrer l'écoute des événements
     createjs.Ticker.removeEventListener("tick", rafraichirAnimation);
-		canevas.addEventListener("mouseup", RetirerExplosion);
-		canevas.addEventListener("mousedown", CliquerSouris);
-		canevas.addEventListener('mousemove', BougerSouris);
-		window.addEventListener("resize", RecalculCanevas);
+		canevas.removeEventListener("mouseup", retirerExplosion);
+		canevas.removeEventListener("mousedown", cliquerSouris);
+		canevas.removeEventListener('mousemove', bougerSouris);
+		window.removeEventListener("resize", recalculCanevas);
+		
+		window.removeEventListener(changementVitesse.type, changerVitesse);
   }
 
 	initialiser();
@@ -273,7 +273,14 @@ Jeu.Evenement =
 {
 		arrierePlanFinChargement : document.createEvent('Event'),
 		balleFinChargement : document.createEvent('Event'),
+
 		changementVitesse : document.createEvent('Event'),
+
+		mortJoueur1 : document.createEvent('Event'),
+		mortJoueur1 : document.createEvent('Event'),
+		explosionAvecJoueur1 : document.createEvent('Event'),
+		explosionAvecJoueur2 : document.createEvent('Event'),
+
 		navigationAccueilEnAction : document.createEvent('Event'),
   	navigationJeuEnAction : document.createEvent('Event'),
   	navigationFinGagantEnAction : document.createEvent('Event'),
@@ -293,5 +300,12 @@ Jeu.Evenement.initialiser = function()
   window['Evenement'] = Jeu.Evenement;
 }();
 
-Jeu = new Jeu();
+Jeu.Configuration =
+{
+	largeur:2000,
+	hauteur:1000,
+	FPS:60
+}
+
+new Jeu();
 })();

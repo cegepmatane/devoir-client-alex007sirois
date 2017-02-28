@@ -14,13 +14,7 @@ var Balle = function(scene)
 	var deplacementY;
 
 	var immunisee;
-	var vitesseHTML
-
-	vitesseDepart = 5;
-	acceleration = 1/2;
-
-	tempsImmunite = 400;
-	pi=Math.PI;
+	var vitesseHTML;
 
 	
     
@@ -36,18 +30,15 @@ var Balle = function(scene)
 			nombreImagesChargees++;
       	}
 
-		imageBalle.src = 'ressource/sprite-balle1.png';
+		imageBalle.src = Balle.Configuration.sourceImage;
         
-		vitesse = vitesseDepart;
-		angle = (Math.random() * pi * 2);
+		vitesse = Balle.Configuration.vitesseDepart;
+		angle = (Math.random() * Math.PI * 2);
 
 		immunisee=false;
 
 		calculerDeplacements();
 
-		vitesseHTML=document.getElementById('vitesse');
-		vitesseHTML.innerHTML = vitesse;
-		window.dispatchEvent(window.Evenement.changementVitesse);
 
 		var demarrerAnimation = function(evenemnt)
 		{
@@ -61,7 +52,7 @@ var Balle = function(scene)
 				}
 			});
 			animationBalle = new createjs.Sprite(spriteBalle, "tourne");
-        	animationBalle.framerate = 10;
+        	animationBalle.framerate = Balle.Configuration.FPS;
 
 			//animationBalle.scaleX = 50/64 ;
 			//animationBalle.scaleY = 50/64;
@@ -77,9 +68,11 @@ var Balle = function(scene)
 		{ 
 			if(nombreImagesChargees == 1)
 			{
-			window.dispatchEvent(chargementCompletBalle); 
-			createjs.Ticker.removeEventListener("tick", validerChargementImage);
-			window.dispatchEvent(window.Evenement.balleFinChargement);
+				window.dispatchEvent(chargementCompletBalle); 
+				createjs.Ticker.removeEventListener("tick", validerChargementImage);
+				window.dispatchEvent(window.Evenement.balleFinChargement);
+			
+				window.dispatchEvent(window.Evenement.changementVitesse);
 			}
 		}
 		
@@ -92,21 +85,21 @@ var Balle = function(scene)
 		deplacementX = vitesse*Math.cos(angle);
 		deplacementY = vitesse*Math.sin(angle);
 	}
-
-	
     
     //constructeur
     initialiser();
 
 	this.reinitialiser = function()
 	{
-		vitesse = vitesseDepart;
-		angle = (Math.random() * pi * 2);
+		vitesse = Balle.Configuration.vitesseDepart;
+		angle = (Math.random() * Math.PI * 2);
 
 		calculerDeplacements();
 
 		animationBalle.x = canevas.width/2;
 		animationBalle.y = canevas.height/2;
+
+		window.dispatchEvent(window.Evenement.changementVitesse);
 	}
     
     //ICI c'est public
@@ -115,11 +108,11 @@ var Balle = function(scene)
         animationBalle.x += deplacementX;
 		animationBalle.y -= deplacementY;
 
-		if(animationBalle.y<=0 ||animationBalle.y >= canevas.height-50)
+		if(animationBalle.y<=0 ||animationBalle.y >= canevas.height-64)
 		{
 			deplacementY *= -1;
 		}
-		if(animationBalle.x<=0 ||animationBalle.x >= canevas.width-50)
+		if(animationBalle.x<=0 ||animationBalle.x >= canevas.width-64)
 		{
 			deplacementX *= -1;
 		}
@@ -130,36 +123,50 @@ var Balle = function(scene)
 		if(immunisee!=true)
 		{
 			immunisee=true;
-			setTimeout(function(){ immunisee=false; }, tempsImmunite);
+			setTimeout(function(){ immunisee=false; }, Balle.Configuration.tempsImmunite);
 
 			angle=Math.atan(deplacementY/deplacementX);
 
 			if(x < animationBalle.x)
-				angle+=pi;
+				angle+=Math.PI;
 
 			var angleHypothenus=Math.atan((animationBalle.y-y)/(animationBalle.x-x));
 
 			if(x < animationBalle.x)
-				angleHypothenus+=pi;
+				angleHypothenus+=Math.PI;
 
 			angleHypothenus=traiterAngle(angleHypothenus);
 			angle=traiterAngle(angle);
-			
+
+
 			angle=2*angleHypothenus+angle;
 
 			angle=traiterAngle(angle);
 
-			vitesse+=Math.floor(Math.pow(vitesse,acceleration)+1);
+			vitesse+=Math.floor(Math.pow(vitesse,Balle.Configuration.acceleration)+1);
 
-			vitesseHTML.innerHTML = vitesse;
 			window.dispatchEvent(window.Evenement.changementVitesse);
 
 			calculerDeplacements();
 		}
 	}
 
-	this.getInformations = function()
+	this.getCoordonnees = function()
 	{
-		return {x :animationBalle.x+25, y : animationBalle.y+25/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
+		return {x :animationBalle.x+32, y : animationBalle.y+32/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
 	}
+
+	this.getVitesse = function()
+	{
+		return vitesse;
+	}
+}
+
+Balle.Configuration =
+{
+	vitesseDepart :5,
+	acceleration : 1/2,
+ 	sourceImage:'ressource/sprite-balle1.png',
+	tempsImmunite : 400,
+	FPS:10
 }

@@ -1,56 +1,42 @@
 //Rien est public...
-var Collisions = function(jeu,Balle, Joueur1, Joueur2)
+var Collisions = function()
 {
-	var balle=null;
-	var joueur1=null;
-	var joueur2=null;
-    
-    //Constructeur parce qu'il est appel� inline � la fin...
-    
+	this.testerCollisions =  function(balle, joueur1, joueur2)
+    {
+		
 
-	this.testerCollisions =  function(verifierB, verifierJ1, verifierJ2)
-    {	
-		if(verifierB==true)
-			balle=Balle.getInformations();
-
-		if(verifierJ1==true)
-			joueur1=Joueur1.getInformations();
-
-		if(verifierJ2==true)
-			joueur2=Joueur2.getInformations();
-
-		if(verifierB==true && verifierJ1==true)
+		if(balle!=null && joueur1!=null)
 		{
 			if(joueur1.modeExplosion!=true)
 			{
 				if(pythagore(joueur1.x-balle.x,joueur1.y-balle.y)<=50)
 				{
-					jeu.partieTerminee();
+					window.dispatchEvent(window.Evenement.mortJoueur1);
 				}
 			}
 			else
 			{
 				if(pythagore(joueur1.x-balle.x,joueur1.y-balle.y)<=75)
 				{
-					Balle.exploser(joueur1.x, joueur1.y);
+					window.dispatchEvent(window.Evenement.explosionAvecJoueur1);
 				}
 			}
 		}
 
-		if(verifierB==true && verifierJ2==true)
+		if(balle!=null && joueur2!=null)
 		{
 			if(joueur2.modeExplosion!=true)
 			{
 				if(pythagore(joueur2.x-balle.x,joueur2.y-balle.y)<=50)
 				{
-					jeu.partieTerminee();
+					//jeu.partieTerminee();
 				}
 			}
 			else
 			{
 				if(pythagore(joueur2.x-balle.x,joueur2.y-balle.y)<=75)
 				{
-					Balle.exploser(joueur1.x, joueur1.y);
+					//Balle.exploser(joueur1.x, joueur1.y);
 				}
 			}
 		}
