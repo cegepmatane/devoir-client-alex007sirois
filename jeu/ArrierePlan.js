@@ -75,11 +75,11 @@ var ArrierePlan = function(scene)
 
     this.changementVitesse = function(vitesse)
     {
-      vitesseEspaceHorizontal=-arrondirAuDecimalVoulu(Math.sqrt(vitesse),2);
-      vitesseEspaceVertical=arrondirAuDecimalVoulu(Math.pow(vitesse,1/3),2);
+      vitesseEspaceHorizontal = -arrondirAuDecimalVoulu(Math.pow(vitesse, 1 / ArrierePlan.Configuration.ralentissementEspaceHorizontal), 2);
+      vitesseEspaceVertical = arrondirAuDecimalVoulu(Math.pow(vitesse, 1 / ArrierePlan.Configuration.ralentissementEspaceVertical),2);
 
-      vitesseEtoilesHorizontal=arrondirAuDecimalVoulu(vitesse/6,2);
-      vitesseEtoilesertical=-arrondirAuDecimalVoulu(vitesse/10,2);
+      vitesseEtoilesHorizontal = arrondirAuDecimalVoulu(Math.pow(vitesse, 1 / ArrierePlan.Configuration.ralentissementEtoileHorizontal), 2);
+      vitesseEtoilesertical = -arrondirAuDecimalVoulu(Math.pow(vitesse, 1 / ArrierePlan.Configuration.ralentissementEtoileVertical), 2);
     }
     
     //ICI c'est public
@@ -100,4 +100,8 @@ ArrierePlan.Configuration =
     imageEtoiles : "ressource/paysage-arriere2.png",
     imageEspace : "ressource/paysage-arriere1.png"
   },
+  ralentissementEspaceHorizontal: 2,
+  ralentissementEspaceVertical: 3,
+  ralentissementEtoileHorizontal: 1.5,
+  ralentissementEtoileVertical: 2,
 }

@@ -14,7 +14,7 @@ var Collisions = function()
 					window.dispatchEvent(window.Evenement.mortJoueur1);
 				}
 			}
-			else
+			else if(balle.immunisee != true)
 			{
 				if(pythagore(joueur1.x-balle.x,joueur1.y-balle.y)<=75)
 				{
@@ -32,7 +32,7 @@ var Collisions = function()
 					//jeu.partieTerminee();
 				}
 			}
-			else
+			else if(balle.immunisee != true)
 			{
 				if(pythagore(joueur2.x-balle.x,joueur2.y-balle.y)<=75)
 				{

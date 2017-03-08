@@ -129,19 +129,21 @@ var Balle = function(scene)
 
 			if(x < animationBalle.x)
 				angle+=Math.PI;
-
+			
+			
 			var angleHypothenus=Math.atan((animationBalle.y-y)/(animationBalle.x-x));
 
 			if(x < animationBalle.x)
 				angleHypothenus+=Math.PI;
-
+			
 			angleHypothenus=traiterAngle(angleHypothenus);
-			angle=traiterAngle(angle);
-
+			angle = traiterAngle(angle);
+			
+			console.log(angleHypothenus + ' ' + angle);
 
 			angle=2*angleHypothenus+angle;
 
-			angle=traiterAngle(angle);
+			angle=arrondirAuDecimalVoulu(traiterAngle(angle),3);
 
 			vitesse+=Math.floor(Math.pow(vitesse,Balle.Configuration.acceleration)+1);
 
@@ -153,7 +155,7 @@ var Balle = function(scene)
 
 	this.getCoordonnees = function()
 	{
-		return {x :animationBalle.x+32, y : animationBalle.y+32/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
+		return {x :animationBalle.x+32, y : animationBalle.y+32, immunisee:immunisee/*, vitesse: vitesse, angle: angle, deplacementX:deplacementX, deplacementY:deplacementY/**/};
 	}
 
 	this.getVitesse = function()
@@ -167,6 +169,6 @@ Balle.Configuration =
 	vitesseDepart :5,
 	acceleration : 1/2,
  	sourceImage:'ressource/sprite-balle1.png',
-	tempsImmunite : 400,
+	tempsImmunite: 800,
 	FPS:10
 }
