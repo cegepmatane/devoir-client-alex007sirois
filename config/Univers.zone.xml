@@ -55,15 +55,15 @@
       <name>Galaxie</name>
       <groupId>default</groupId>
       <password></password>
-      <maxUsers>20</maxUsers>
-      <maxSpectators>0</maxSpectators>
+      <maxUsers>2</maxUsers>
+      <maxSpectators>1</maxSpectators>
       <isDynamic>false</isDynamic>
-      <isGame>false</isGame>
+      <isGame>true</isGame>
       <isHidden>false</isHidden>
       <autoRemoveMode>DEFAULT</autoRemoveMode>
       <permissions>
         <flags>PASSWORD_STATE_CHANGE,PUBLIC_MESSAGES</flags>
-        <maxRoomVariablesAllowed>10</maxRoomVariablesAllowed>
+        <maxRoomVariablesAllowed>7</maxRoomVariablesAllowed>
       </permissions>
       <events>USER_ENTER_EVENT,USER_EXIT_EVENT,USER_COUNT_CHANGE_EVENT,USER_VARIABLES_UPDATE_EVENT</events>
       <badWordsFilter isActive="false"/>

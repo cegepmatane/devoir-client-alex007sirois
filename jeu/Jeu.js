@@ -8,7 +8,7 @@ function Jeu()
 	var balle = null;
 	var terrain = null;
 	var joueur1 = null;
-	//var joueur2 = null;
+	var joueur2 = null;
 	var collisions = null;
 
 	var vitesseBalle;
@@ -27,7 +27,13 @@ function Jeu()
 	var finVue = null;
 	var vueActive = null;
 
+	var serveur=null;
+
 	var nomJoueur = "";
+	var ignorerProchainImpactBalle=false;
+
+	var numeroJoueur;
+	var etat;
 	
 	var initialiserCanevas = function()
   {
@@ -64,9 +70,6 @@ function Jeu()
 	{
 		initialiserCanevas();
 
-		canevas.addEventListener("mouseup", interpreterEvenementsApplicatifs);
-		canevas.addEventListener("mousedown", interpreterEvenementsApplicatifs);
-		canevas.addEventListener("mousemove", interpreterEvenementsApplicatifs);
 		window.addEventListener("resize", interpreterEvenementsApplicatifs);
 
 		window.addEventListener(window.Evenement.arrierePlanFinChargement.type, interpreterEvenementsApplicatifs);
@@ -82,19 +85,20 @@ function Jeu()
   {
     switch(evenement.type)
 		{
+			case window.Evenement.joueur2EnAction.type:
+				joueur2.recevoirCoordonneesServeur(serveur.getPositionAutreJoueur());
+				break;
+
 			case "mouseup":
-				if (joueur1 != null)
-					joueur1.retirerExplosion();
+				joueur1.retirerExplosion();
 				break;	
 
 			case "mousedown":
-				if (joueur1 != null)
-					joueur1.exploser();
+				joueur1.exploser();
 				break;	
 
 			case "mousemove":
-				if (joueur1 != null)
-					joueur1.bouger(evenement, ratioX, ratioY, informationCanevas);
+				joueur1.bouger(evenement, ratioX, ratioY, informationCanevas);
 				break;	
 
 			case "resize":
@@ -106,37 +110,81 @@ function Jeu()
 
 			case window.Evenement.arrierePlanFinChargement.type:
         window.removeEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
+
 				window.addEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
 				window.addEventListener(window.Evenement.changementVitesse.type, interpreterEvenementsApplicatifs);
+
 				vitesseHTML=document.getElementById('vitesse');
 				balle = new Balle(scene);
       break;
 
 			case window.Evenement.changementVitesse.type:
 				vitesseBalle=balle.getVitesse();
+
 				vitesseHTML.innerHTML=vitesseBalle;
 				arrierePlan.changementVitesse(vitesseBalle);
 			break;
 
+			case window.Evenement.mortJoueur.type:
+					if(numeroJoueur==1)
+						changerVariablesServeur("etat", "mort joueur 1");
+					else if(numeroJoueur==2)
+						changerVariablesServeur("etat", "mort joueur 2");
+			break;
+			case window.Evenement.mortJoueur2.type:
 			case window.Evenement.mortJoueur1.type:
 				window.dispatchEvent(window.Evenement.navigationFinEnAction);
 			break;
 
-			case window.Evenement.explosionAvecJoueur1.type:
-				balle.exploser(coordoneeJoueur1.x,coordoneeJoueur1.y)
+			case window.Evenement.explosionAvecJoueur.type:
+				ignorerProchainImpactBalle=true;
+				balle.exploser(coordoneeJoueur1.horizontal,coordoneeJoueur1.vertical);
+			break;
+
+			case window.Evenement.impactBalle.type:
+				if(ignorerProchainImpactBalle);
+					balle.recevoirCoordonneesServeur(serveur.getInfosBalle(), serveur.getPositionBalle());
+
+				ignorerProchainImpactBalle=false;
 			break;
 
 			case window.Evenement.balleFinChargement.type:
 				window.removeEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
-				joueur1 = new Joueur(scene);
-				//joueur2 = new Joueur(scene, true);
+
+				joueur1 = new Joueur(scene, numeroJoueur);
+				joueur2 = new Joueur(scene, (3-numeroJoueur));
+
 				coordoneeJoueur1=joueur1.getCoordonnees();
+
+				canevas.addEventListener("mouseup", interpreterEvenementsApplicatifs);
+				canevas.addEventListener("mousedown", interpreterEvenementsApplicatifs);
+				canevas.addEventListener("mousemove", interpreterEvenementsApplicatifs);
+
+				window.addEventListener(window.Evenement.joueur2EnAction.type, interpreterEvenementsApplicatifs);
+				window.addEventListener(window.Evenement.mortJoueur.type, interpreterEvenementsApplicatifs);
 				window.addEventListener(window.Evenement.mortJoueur1.type, interpreterEvenementsApplicatifs);
-				//	window.addEventListener(mortJoueur2, recalculCanevas);
-				window.addEventListener(window.Evenement.explosionAvecJoueur1.type, interpreterEvenementsApplicatifs);
-				//window.addEventListener(explosionAvecJoueur1, recalculCanevas);
-				collisions = new Collisions(jeu,balle, joueur1/*, joueur2*/);
+				window.addEventListener(window.Evenement.mortJoueur2.type, interpreterEvenementsApplicatifs);
+				window.addEventListener(window.Evenement.explosionAvecJoueur.type, interpreterEvenementsApplicatifs);
+				window.addEventListener(window.Evenement.impactBalle.type, interpreterEvenementsApplicatifs);
+
+				collisions = new Collisions();
+
 				createjs.Ticker.addEventListener("tick", rafraichirAnimation);
+
+				if(numeroJoueur==2)
+				{
+					ignorerProchainImpactBalle=true;
+					balle.commencer();
+				}
+			break;
+			case window.Evenement.changementEtatPartie.type:
+				etat=serveur.getEtat();
+
+				if(etat=="mort joueur 2")
+					window.dispatchEvent(window.Evenement.mortJoueur2);
+
+				if(etat=="mort joueur 1")
+					window.dispatchEvent(window.Evenement.mortJoueur1);
 			break;
       //Gestion de la navigation entre les écrans
       case window.Evenement.navigationAccueilEnAction.type:
@@ -148,6 +196,13 @@ function Jeu()
         vueActive = accueilVue;
       break;
       case window.Evenement.navigationJeuEnAction.type:
+				window.addEventListener(window.Evenement.serveurPret.type, interpreterEvenementsApplicatifs);
+				serveur.initialiserServeur(nomJoueur);
+			break;
+			case window.Evenement.serveurPret.type:
+				window.removeEventListener(window.Evenement.serveurPret.type, interpreterEvenementsApplicatifs);
+				window.addEventListener(window.Evenement.changementEtatPartie.type, interpreterEvenementsApplicatifs);
+				numeroJoueur=serveur.getNumeroJoueur();
         jeuVue.afficher();
         vueActive = jeuVue;
         lancer();
@@ -209,7 +264,7 @@ function Jeu()
 
   var initialiser = function()
   {
-    //Création des vues à partir des templates dans le HTML
+		serveur= new ConnecterServeur();
     accueilVue = new AccueilVue();
     jeuVue = new JeuVue();
     finVue = new FinVue();
@@ -228,11 +283,16 @@ function Jeu()
     vueActive = accueilVue;
   }
 
-	  var quitterScene = function()
+	var quitterScene = function()
   {
     //Il faut faire du ménage pour ne pas surcharger le navigateur.
-    
+    serveur.quitterSeveur();
     //Désenregistrer l'écoute des événements
+		window.removeEventListener(window.Evenement.joueur2EnAction.type, interpreterEvenementsApplicatifs);
+		window.removeEventListener(window.Evenement.mortJoueur1.type, interpreterEvenementsApplicatifs);
+		window.removeEventListener(window.Evenement.mortJoueur2.type, interpreterEvenementsApplicatifs);
+		window.removeEventListener(window.Evenement.explosionAvecJoueur.type, interpreterEvenementsApplicatifs);
+		window.removeEventListener(window.Evenement.changementEtatPartie.type, interpreterEvenementsApplicatifs);
     createjs.Ticker.removeEventListener("tick", rafraichirAnimation);
 		canevas.removeEventListener("mouseup", interpreterEvenementsApplicatifs);
 		canevas.removeEventListener("mousedown", interpreterEvenementsApplicatifs);
@@ -247,6 +307,11 @@ function Jeu()
 
 Jeu.Evenement =
 {
+	joueur2EnAction:document.createEvent('Event'),
+	serveurPret:document.createEvent('Event'),
+	changementEtatPartie:document.createEvent('Event'),
+	impactBalle:document.createEvent('Event'),
+
 	boutonSourisEnAction: document.createEvent('Event'),
 	boutonSourisRelache: document.createEvent('Event'),
 	bougeSouris: document.createEvent('Event'),
@@ -257,10 +322,10 @@ Jeu.Evenement =
 
 	changementVitesse: document.createEvent('Event'),
 
+	mortJoueur : document.createEvent('Event'),
 	mortJoueur1 : document.createEvent('Event'),
-	mortJoueur1 : document.createEvent('Event'),
-	explosionAvecJoueur1 : document.createEvent('Event'),
-	explosionAvecJoueur2 : document.createEvent('Event'),
+	mortJoueur2 : document.createEvent('Event'),
+	explosionAvecJoueur : document.createEvent('Event'),
 
 	navigationAccueilEnAction: document.createEvent('Event'),
   navigationJeuEnAction : document.createEvent('Event'),
