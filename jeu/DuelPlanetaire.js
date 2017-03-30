@@ -9,13 +9,11 @@ function Jeu()
 	var terrain = null;
 	var joueur1 = null;
 	var joueur2 = null;
-	var collisions = null;
 
 	var vitesseBalle;
-	var vitesseHTML;
 
-	var ratioX;
-	var ratioY;
+	var ratioCanevasX;
+	var ratioCanevasY;
 	var canevas;
 	var informationCanevas;
 
@@ -30,6 +28,9 @@ function Jeu()
 	var serveur=null;
 
 	var nomJoueur = "";
+	var nomAdversaire="";
+	var etatVictoire="";
+
 	var ignorerProchainImpactBalle=false;
 
 	var numeroJoueur;
@@ -43,15 +44,13 @@ function Jeu()
 		canevas = document.getElementById('canevas');
 
 			//RecalculCanevas(null);
-		canevas.style.width = "94%";
-
+		canevas.style.width = "92%"
 		canevas.style.marginLeft = "5%";
-		canevas.style.marginTop="1%";
 
 		informationCanevas=canevas.getBoundingClientRect();
 
-		ratioX = canevas.width / informationCanevas.width;
-		ratioY = canevas.height / informationCanevas.height;
+		ratioCanevasX = canevas.width / informationCanevas.width;
+		ratioCanevasY = canevas.height / informationCanevas.height;
 	}
 	
 	var rafraichirAnimation = function(evenement)
@@ -61,7 +60,7 @@ function Jeu()
 
 		coordoneeJoueur1=joueur1.getCoordonnees();
 
-		collisions.testerCollisions(balle.getCoordonnees(), coordoneeJoueur1);
+		testerCollisions(balle.getCoordonnees(), coordoneeJoueur1);
 
 		scene.update(evenement);
 	}
@@ -77,13 +76,13 @@ function Jeu()
 		scene = new createjs.Stage(canevas);
 		arrierePlan = new ArrierePlan(scene);
 
-		createjs.Ticker.setInterval(1000/Jeu.Configuration.FPS);
+		createjs.Ticker.setFPS(Jeu.Configuration.FPS);
 	}
 
   //Le contexte EST GÉRÉ par cette fonction
 	var interpreterEvenementsApplicatifs = function(evenement)
   {
-    switch(evenement.type)
+	switch(evenement.type)
 		{
 			case window.Evenement.joueur2EnAction.type:
 				joueur2.recevoirCoordonneesServeur(serveur.getPositionAutreJoueur());
@@ -98,31 +97,30 @@ function Jeu()
 				break;	
 
 			case "mousemove":
-				joueur1.bouger(evenement, ratioX, ratioY, informationCanevas);
+				joueur1.bouger(((evenement.clientX - informationCanevas.left)*ratioCanevasX), ((evenement.clientY - informationCanevas.top)*ratioCanevasY));
 				break;	
 
 			case "resize":
 				informationCanevas = canevas.getBoundingClientRect();
 
-				ratioX = canevas.width / informationCanevas.width;
-				ratioY = canevas.height / informationCanevas.height;
+				ratioCanevasX = canevas.width / informationCanevas.width;
+				ratioCanevasY = canevas.height / informationCanevas.height;
 				break;
 
 			case window.Evenement.arrierePlanFinChargement.type:
-        window.removeEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
+		window.removeEventListener(window.Evenement.arrierePlanFinChargement.type,interpreterEvenementsApplicatifs);
 
 				window.addEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
 				window.addEventListener(window.Evenement.changementVitesse.type, interpreterEvenementsApplicatifs);
 
-				vitesseHTML=document.getElementById('vitesse');
+				
 				balle = new Balle(scene);
-      break;
+	  break;
 
 			case window.Evenement.changementVitesse.type:
 				vitesseBalle=balle.getVitesse();
-
-				vitesseHTML.innerHTML=vitesseBalle;
-				arrierePlan.changementVitesse(vitesseBalle);
+				jeuVue.modifierVitesse(vitesseBalle);
+				arrierePlan.changerVitesse(vitesseBalle);
 			break;
 
 			case window.Evenement.mortJoueur.type:
@@ -132,7 +130,17 @@ function Jeu()
 						changerVariablesServeur("etat", "mort joueur 2");
 			break;
 			case window.Evenement.mortJoueur2.type:
+				if(numeroJoueur==1)
+					etatVictoire="gagne";
+				else
+					etatVictoire="perdu";
+				window.dispatchEvent(window.Evenement.navigationFinEnAction);
+			break;
 			case window.Evenement.mortJoueur1.type:
+				if(numeroJoueur==2)
+					etatVictoire="gagne";
+				else
+					etatVictoire="perdu";
 				window.dispatchEvent(window.Evenement.navigationFinEnAction);
 			break;
 
@@ -167,12 +175,11 @@ function Jeu()
 				window.addEventListener(window.Evenement.explosionAvecJoueur.type, interpreterEvenementsApplicatifs);
 				window.addEventListener(window.Evenement.impactBalle.type, interpreterEvenementsApplicatifs);
 
-				collisions = new Collisions();
-
 				createjs.Ticker.addEventListener("tick", rafraichirAnimation);
 
 				if(numeroJoueur==2)
 				{
+					changerVariablesServeur("etat","partie en cours")
 					ignorerProchainImpactBalle=true;
 					balle.commencer();
 				}
@@ -185,41 +192,50 @@ function Jeu()
 
 				if(etat=="mort joueur 1")
 					window.dispatchEvent(window.Evenement.mortJoueur1);
+
+				if(etat=="partie en cours")
+				{
+					nomAdversaire=serveur.getNomAdversaire();
+					document.getElementById("nomAdversaire").innerHTML = "Adversaire: " + nomAdversaire;
+					tracer(serveur.getNomAdversaire());
+				}
 			break;
-      //Gestion de la navigation entre les écrans
-      case window.Evenement.navigationAccueilEnAction.type:
-        if (vueActive instanceof JeuVue)
-        {
-          quitterScene();
-        }
-        accueilVue.afficher();
-        vueActive = accueilVue;
-      break;
-      case window.Evenement.navigationJeuEnAction.type:
+	  //Gestion de la navigation entre les écrans
+		case window.Evenement.navigationAccueilEnAction.type:
+			if (vueActive instanceof JeuVue)
+			{
+			quitterScene();
+			}
+			accueilVue.afficher();
+			vueActive = accueilVue;
+	 	break;
+		case window.Evenement.navigationJeuEnAction.type:
 				window.addEventListener(window.Evenement.serveurPret.type, interpreterEvenementsApplicatifs);
 				serveur.initialiserServeur(nomJoueur);
-			break;
-			case window.Evenement.serveurPret.type:
-				window.removeEventListener(window.Evenement.serveurPret.type, interpreterEvenementsApplicatifs);
-				window.addEventListener(window.Evenement.changementEtatPartie.type, interpreterEvenementsApplicatifs);
-				numeroJoueur=serveur.getNumeroJoueur();
-        jeuVue.afficher();
-        vueActive = jeuVue;
-        lancer();
-      break;
-      case window.Evenement.navigationFinEnAction.type:
-        if (vueActive instanceof JeuVue)
-        {
-          quitterScene();
-        }
-        finVue.afficher(nomJoueur, vitesseBalle);
-        vueActive = finVue;
-      break;
-        
-      //Gestion du nom du joueur dans la vue Accueil
-      case window.Evenement.accueilVueEnregistrerNomJoueurEnAction.type:
-        nomJoueur = accueilVue.getNomJoueur();
-      break;
+		break;
+		case window.Evenement.serveurPret.type:
+			window.removeEventListener(window.Evenement.serveurPret.type, interpreterEvenementsApplicatifs);
+			window.addEventListener(window.Evenement.changementEtatPartie.type, interpreterEvenementsApplicatifs);
+			nomJoueur = serveur.getNomJoueur();
+			numeroJoueur=serveur.getNumeroJoueur();
+			jeuVue.afficher();
+			vueActive = jeuVue;
+			document.getElementById("nomJoueur").innerHTML = "Nom du Joueur: "+ nomJoueur;
+			lancer();
+	  	break;
+		case window.Evenement.navigationFinEnAction.type:
+			if (vueActive instanceof JeuVue)
+			{
+			quitterScene();
+			}
+			finVue.afficher(nomJoueur,nomAdversaire,etatVictoire, vitesseBalle);
+			vueActive = finVue;
+	  	break;
+		
+	  //Gestion du nom du joueur dans la vue Accueil
+	  case window.Evenement.accueilVueEnregistrerNomJoueurEnAction.type:
+		nomJoueur = accueilVue.getNomJoueur();
+	  break;
   	}
   }
 
@@ -264,43 +280,44 @@ function Jeu()
 
   var initialiser = function()
   {
-		serveur= new ConnecterServeur();
-    accueilVue = new AccueilVue();
-    jeuVue = new JeuVue();
-    finVue = new FinVue();
+	serveur= new ConnecterServeur();
+	accueilVue = new AccueilVue();
+	jeuVue = new JeuVue();
+	finVue = new FinVue();
 
-    //Enregistrer l'écoute des événements
+	//Enregistrer l'écoute des événements
 
-    window.addEventListener("hashchange", interpreterEvenementsLocation);
-    window.addEventListener(window.Evenement.navigationAccueilEnAction.type, interpreterEvenementsApplicatifs, false);
-    window.addEventListener(window.Evenement.navigationJeuEnAction.type, interpreterEvenementsApplicatifs, false);
-    window.addEventListener(window.Evenement.navigationFinEnAction.type, interpreterEvenementsApplicatifs, false);
+	window.addEventListener("hashchange", interpreterEvenementsLocation);
+	window.addEventListener(window.Evenement.navigationAccueilEnAction.type, interpreterEvenementsApplicatifs, false);
+	window.addEventListener(window.Evenement.navigationJeuEnAction.type, interpreterEvenementsApplicatifs, false);
+	window.addEventListener(window.Evenement.navigationFinEnAction.type, interpreterEvenementsApplicatifs, false);
 
-    window.addEventListener(window.Evenement.accueilVueEnregistrerNomJoueurEnAction.type, interpreterEvenementsApplicatifs, false);
-    
-    //Première interaction possible avec le joueur
-    accueilVue.afficher();
-    vueActive = accueilVue;
+	window.addEventListener(window.Evenement.accueilVueEnregistrerNomJoueurEnAction.type, interpreterEvenementsApplicatifs, false);
+	
+	//Première interaction possible avec le joueur
+	accueilVue.afficher();
+	vueActive = accueilVue;
   }
 
 	var quitterScene = function()
-  {
-    //Il faut faire du ménage pour ne pas surcharger le navigateur.
-    serveur.quitterSeveur();
-    //Désenregistrer l'écoute des événements
+	{
+	//Il faut faire du ménage pour ne pas surcharger le navigateur.
+		serveur.quitterSeveur();
+	//Désenregistrer l'écoute des événements
 		window.removeEventListener(window.Evenement.joueur2EnAction.type, interpreterEvenementsApplicatifs);
 		window.removeEventListener(window.Evenement.mortJoueur1.type, interpreterEvenementsApplicatifs);
 		window.removeEventListener(window.Evenement.mortJoueur2.type, interpreterEvenementsApplicatifs);
 		window.removeEventListener(window.Evenement.explosionAvecJoueur.type, interpreterEvenementsApplicatifs);
 		window.removeEventListener(window.Evenement.changementEtatPartie.type, interpreterEvenementsApplicatifs);
-    createjs.Ticker.removeEventListener("tick", rafraichirAnimation);
+
+		createjs.Ticker.removeEventListener("tick", rafraichirAnimation);
 		canevas.removeEventListener("mouseup", interpreterEvenementsApplicatifs);
 		canevas.removeEventListener("mousedown", interpreterEvenementsApplicatifs);
 		canevas.removeEventListener('mousemove', interpreterEvenementsApplicatifs);
 		window.removeEventListener("resize", interpreterEvenementsApplicatifs);
 		
 		window.removeEventListener(window.Evenement.changementVitesse.type, interpreterEvenementsApplicatifs);
-  }
+ 	}
 
 	initialiser();
 }
@@ -312,9 +329,9 @@ Jeu.Evenement =
 	changementEtatPartie:document.createEvent('Event'),
 	impactBalle:document.createEvent('Event'),
 
-	boutonSourisEnAction: document.createEvent('Event'),
+	/*boutonSourisEnAction: document.createEvent('Event'),
 	boutonSourisRelache: document.createEvent('Event'),
-	bougeSouris: document.createEvent('Event'),
+	bougeSouris: document.createEvent('Event'),*/
 	redimensionnementEcran: document.createEvent('Event'),
 	
 	arrierePlanFinChargement : document.createEvent('Event'),
@@ -337,10 +354,10 @@ Jeu.Evenement.initialiser = function()
 {
   for(key in Jeu.Evenement)
   {
-    if(Jeu.Evenement[key] instanceof Event)
-    {
-      Jeu.Evenement[key].initEvent(key, true, true);
-    }
+	if(Jeu.Evenement[key] instanceof Event)
+	{
+	  Jeu.Evenement[key].initEvent(key, true, true);
+	}
   }
   window['Evenement'] = Jeu.Evenement;
 }();

@@ -74,17 +74,19 @@ var Joueur = function(scene, numero)
 	}
 
     //ICI c'est public
-    this.bouger = function(evenement,ratioX,ratioY, informationCanevas)
-    {	
-		cercle.x = (evenement.clientX - informationCanevas.left)*ratioX;
-		cercle.y =(evenement.clientY - informationCanevas.top)*ratioY;
+    this.bouger = function(positionX,positionY)
+    {
+		/*createjs.Tween.get(cercle)
+          .to({x: positionX,y:positionY}, 0, createjs.Ease.linear);*/
+		cercle.x = positionX;
+		cercle.y = positionY;
 
 		joueur.envoyerCoordonneesAuServeur();
 	}
 
 	this.exploser =  function()
     {
-		if(peutExploser!=false)
+		if(peutExploser)
 		{
 			peutExploser=false;
 			explose=true;

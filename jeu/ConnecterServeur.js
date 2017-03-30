@@ -17,6 +17,7 @@ var ConnecterServeur = function()
 
 	var salle;
 	var numeroJoueur;
+	var utilisateur;
 
 	this.initialiserServeur = function(nom)
 	{
@@ -32,10 +33,10 @@ var ConnecterServeur = function()
 			tracer('onload -> initialiser() -> new SmartFox(configuration)');
 				
 			serveur.addEventListener(SFS2X.SFSEvent.CONNECTION, executerApresOuvertureContactServeur, this);
-			serveur.addEventListener(SFS2X.SFSEvent.LOGOUT, executerApresFermetureSession, this);
+			serveur.addEventListener(SFS2X.SFSEvent.USER_EXIT_ROOM, executerApresFermetureSession, this);
 			serveur.addEventListener(SFS2X.SFSEvent.LOGIN, executerApresOuvertureSession, this);
 			serveur.addEventListener(SFS2X.SFSEvent.ROOM_JOIN, executerApresEntreeSalon, this);
-			serveur.addEventListener(SFS2X.SFSEvent.ROOM_VARIABLES_UPDATE, executerApresVariableDeSalon, this);		
+			serveur.addEventListener(SFS2X.SFSEvent.ROOM_VARIABLES_UPDATE, executerApresVariableDeSalon, this);
 
 			ouvrirContactServeur();
 		}
@@ -53,7 +54,11 @@ var ConnecterServeur = function()
 		
 		var executerApresFermetureSession = function(evenement)
 		{
-			tracer("serveur quitté");
+			if(salle.containsUser(utilisateur))
+			{
+				changerVariablesServeur('etat',"mort joueur " + (3-numeroJoueur));
+				tracer("Le joueur " + (3-numeroJoueur) + "a abandonné");
+			}
 		}
 
 		var executerApresOuvertureContactServeur = function(evenement)
@@ -70,8 +75,10 @@ var ConnecterServeur = function()
 
 		var executerApresOuvertureSession = function(evenement)
 		{
+			utilisateur=evenement.user;
+
 			tracer('executerApresOuvertureSession', false);
-			tracer("L'usager: " + evenement.user.name + " est dans la zone " + evenement.zone);
+			tracer("L'usager: " + utilisateur.name + " est dans la zone " + evenement.zone);
 			entrerSalon();
 		}
 
@@ -216,7 +223,29 @@ var ConnecterServeur = function()
 	this.quitterSeveur = function()
 	{
 		serveur.send(new SFS2X.Requests.System.LogoutRequest());
-		
+	}
+
+	this.getNomJoueur = function()
+	{
+		return utilisateur.name;
+	}
+
+	this.getNomAdversaire = function()
+	{
+		var listeJoueur=salle.getPlayerList();
+
+		var nom="";
+
+		listeJoueur.forEach(function(joueur) 
+		{
+			if(!joueur.isItMe)
+			{
+				nom= joueur.name;
+				return nom;
+			}
+		});
+
+		return nom;
 	}
 
 	this.getPositionAutreJoueur = function()

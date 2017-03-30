@@ -7,8 +7,9 @@
 
 		<script type="text/javascript" src="lib/easeljs-0.8.2.min.js"></script>
 		<script type="text/javascript" src="lib/Calculs.js"></script>
-		<script src="lib/jquery-1.7.2.min.js"></script>
-    	<script src="lib/SFS2X_API_JS.js"></script>
+		<script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
+    	<script type="text/javascript" src="lib/SFS2X_API_JS.js"></script>
+		<script type="text/javascript" src="lib/tweenjs-0.6.2.min.js"></script>
 
 		<link rel="stylesheet" type="text/css" href="decoration/style.css"
 
@@ -19,8 +20,8 @@
 		  <script type="text/plain" id="page-accueil">
 			
 			<header>
-				<h1>Jeu Pong</h1>
-				<h2>Le jeu le plus trippant du monde</h2>
+				<h1>Duel Planetaire</h1>
+				<h2>Le duel le plus intense de l'univers!</h2>
 			</header>
 
 			<section id="section-accueil">
@@ -42,6 +43,9 @@
 		</script>
 
 		<script type="text/plain" id="page-jeu">
+			<span id="nomJoueur"></span>
+			<span id="nomAdversaire"></span>
+
 			<div id="canevasDiv" ></div>
 			
 			<div id="vitesse"></div>
@@ -51,8 +55,8 @@
 
 		<script type="text/plain" id="page-fin">
 			<header>
-				<h1>Jeu Pong</h1>
-				<h2>Le jeu le plus trippant du monde</h2>
+				<h1>Duel Planetaire</h1>
+				<h2>Le duel le plus intense de l'univers!</h2>
 			</header>
 			<section id="section-fin">
 				<div id="resultat">
@@ -79,7 +83,7 @@
 		
 		<script type="text/javascript" src="jeu/ConnecterServeur.js"></script>
 
-		<script type="text/javascript" src="jeu/Jeu.js"></script>
+		<script type="text/javascript" src="jeu/DuelPlanetaire.js"></script>
 
 	</body>
 </html>

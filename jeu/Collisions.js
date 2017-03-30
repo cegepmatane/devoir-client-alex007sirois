@@ -1,23 +1,25 @@
-//Rien est public...
-var Collisions = function()
+var constantes =
 {
-	this.testerCollisions =  function(balle, joueur1)
-    {
-		if(balle!=null && joueur1!=null)
+	rayonBalle :32,
+	rayonJoueur : 25
+}
+
+function testerCollisions(coordonneesBalle, coordonneesJoueur)
+{
+	if(coordonneesBalle!=null && coordonneesJoueur!=null)
+	{
+		if(!coordonneesJoueur.explose)
 		{
-			if(joueur1.explose!=true)
+			if(pythagore(coordonneesJoueur.horizontal-coordonneesBalle.x,coordonneesJoueur.vertical-coordonneesBalle.y)<=(constantes.rayonBalle+constantes.rayonJoueur))
 			{
-				if(pythagore(joueur1.horizontal-balle.x,joueur1.vertical-balle.y)<=50)
-				{
-					window.dispatchEvent(window.Evenement.mortJoueur);
-				}
+				window.dispatchEvent(window.Evenement.mortJoueur);
 			}
-			else if(balle.immunisee != true)
+		}
+		else if(!coordonneesBalle.immunisee)
+		{
+			if(pythagore(coordonneesJoueur.horizontal-coordonneesBalle.x,coordonneesJoueur.vertical-coordonneesBalle.y)<=(constantes.rayonBalle+2*constantes.rayonJoueur))
 			{
-				if(pythagore(joueur1.horizontal-balle.x,joueur1.vertical-balle.y)<=75)
-				{
-					window.dispatchEvent(window.Evenement.explosionAvecJoueur);
-				}
+				window.dispatchEvent(window.Evenement.explosionAvecJoueur);
 			}
 		}
 	}
