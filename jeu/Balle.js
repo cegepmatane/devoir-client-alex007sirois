@@ -124,21 +124,35 @@ var Balle = function(scene)
 	}
     
     //ICI c'est public
-    this.rafraichirAnimation =  function(evenement)
+    this.rafraichirAnimation =  function(proportionDelais)
     {
 		if(vitesse>0)
 		{
-			animationBalle.x += deplacementX;
-			animationBalle.y -= deplacementY;
-
 			if(animationBalle.y<=0 ||animationBalle.y >= scene.canvas.height-Balle.Configuration.diametre)
 			{
 				deplacementY *= -1;
+
+				if(animationBalle.y<=0)
+					createjs.Tween.get(animationBalle).to({y:Math.abs(animationBalle.y)}, 15, createjs.Ease.backIn(1));
+					//animationBalle.y=Math.abs(animationBalle.y);
+
+				if(animationBalle.y >= scene.canvas.height-Balle.Configuration.diametre)
+					createjs.Tween.get(animationBalle).to({y:2*(scene.canvas.height-Balle.Configuration.diametre)-animationBalle.y}, 15, createjs.Ease.backIn(1));
+					//animationBalle.y=2*(scene.canvas.height-Balle.Configuration.diametre)-animationBalle.y;
 			}
 			if(animationBalle.x<=0 ||animationBalle.x >= scene.canvas.width-Balle.Configuration.diametre)
 			{
 				deplacementX *= -1;
+
+				if(animationBalle.x<=0)
+					createjs.Tween.get(animationBalle).to({x:Math.abs(animationBalle.x)}, 15, createjs.Ease.backIn(1));
+
+				if(animationBalle.x >= scene.canvas.width-Balle.Configuration.diametre)
+					createjs.Tween.get(animationBalle).to({x:2*(scene.canvas.width-Balle.Configuration.diametre)-animationBalle.x}, 15, createjs.Ease.backIn(1));
 			}
+
+			animationBalle.x += proportionDelais*deplacementX;
+			animationBalle.y -= proportionDelais*deplacementY;
 		}
 	}
 

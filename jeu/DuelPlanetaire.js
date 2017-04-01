@@ -35,6 +35,9 @@ function Jeu()
 
 	var numeroJoueur;
 	var etat;
+
+	var dernierRafraichissement= Date.now();
+	var proportionDelais=1;
 	
 	var initialiserCanevas = function()
   {
@@ -56,7 +59,15 @@ function Jeu()
 	var rafraichirAnimation = function(evenement)
 	{
 		arrierePlan.rafraichirAnimation(evenement);
-		balle.rafraichirAnimation(evenement);
+
+		date = Date.now();
+
+		if(vitesseBalle!=0)
+			proportionDelais=(date-dernierRafraichissement)/Jeu.Configuration.delais;
+
+		balle.rafraichirAnimation(proportionDelais);
+
+		dernierRafraichissement=date;
 
 		coordoneeJoueur1=joueur1.getCoordonnees();
 
@@ -86,6 +97,12 @@ function Jeu()
 		{
 			case window.Evenement.joueur2EnAction.type:
 				joueur2.recevoirCoordonneesServeur(serveur.getPositionAutreJoueur());
+
+				if(numeroJoueur==1 && vitesseBalle==0)
+					{
+						ignorerProchainImpactBalle=true;
+						balle.commencer();
+					}
 				break;
 
 			case "mouseup":
@@ -112,7 +129,6 @@ function Jeu()
 
 				window.addEventListener(window.Evenement.balleFinChargement.type,interpreterEvenementsApplicatifs);
 				window.addEventListener(window.Evenement.changementVitesse.type, interpreterEvenementsApplicatifs);
-
 				
 				balle = new Balle(scene);
 	  break;
@@ -180,8 +196,6 @@ function Jeu()
 				if(numeroJoueur==2)
 				{
 					changerVariablesServeur("etat","partie en cours")
-					ignorerProchainImpactBalle=true;
-					balle.commencer();
 				}
 			break;
 			case window.Evenement.changementEtatPartie.type:
@@ -197,14 +211,14 @@ function Jeu()
 				{
 					nomAdversaire=serveur.getNomAdversaire();
 					document.getElementById("nomAdversaire").innerHTML = "Adversaire: " + nomAdversaire;
-					tracer(serveur.getNomAdversaire());
+					tracer("Adversaire: " + serveur.getNomAdversaire());
 				}
 			break;
 	  //Gestion de la navigation entre les écrans
 		case window.Evenement.navigationAccueilEnAction.type:
 			if (vueActive instanceof JeuVue)
 			{
-			quitterScene();
+				quitterScene();
 			}
 			accueilVue.afficher();
 			vueActive = accueilVue;
@@ -226,7 +240,7 @@ function Jeu()
 		case window.Evenement.navigationFinEnAction.type:
 			if (vueActive instanceof JeuVue)
 			{
-			quitterScene();
+				quitterScene();
 			}
 			finVue.afficher(nomJoueur,nomAdversaire,etatVictoire, vitesseBalle);
 			vueActive = finVue;
@@ -366,7 +380,9 @@ Jeu.Configuration =
 {
 	largeur:2000,
 	hauteur:1000,
-	FPS:60
+	FPS:60,
+	delais:(1000/60)
+
 }
 
 new Jeu();

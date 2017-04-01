@@ -37,6 +37,8 @@ var ConnecterServeur = function()
 			serveur.addEventListener(SFS2X.SFSEvent.LOGIN, executerApresOuvertureSession, this);
 			serveur.addEventListener(SFS2X.SFSEvent.ROOM_JOIN, executerApresEntreeSalon, this);
 			serveur.addEventListener(SFS2X.SFSEvent.ROOM_VARIABLES_UPDATE, executerApresVariableDeSalon, this);
+			serveur.addEventListener(SFS2X.SFSEvent.LOGIN_ERROR, executerApresErreureLogin, this);
+			
 
 			ouvrirContactServeur();
 		}
@@ -71,6 +73,13 @@ var ConnecterServeur = function()
 		{
 			tracer("ouvrirSession", false);
 			serveur.send(new SFS2X.Requests.System.LoginRequest(nom));
+		}
+
+		var executerApresErreureLogin = function(evenement)
+		{
+			tracer("probleme login", false);
+			nom+=""+1;
+			ouvrirSession();
 		}
 
 		var executerApresOuvertureSession = function(evenement)

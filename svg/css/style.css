@@ -1,133 +1,15 @@
-*
-{/*pour que la taille de police soit relative au width ou height, le plus petit des deux*/
-	font-size: 4vmin;
+<style>
+/*=============================================
+[ Page Setup ]
+==============================================*/
+body { background: #34495e }
+#pageWrap {
+    width: 100%;
+    overflow: hidden;
 }
-		
-#debug
-{
-	max-height:800px;
-	overflow:hidden;
-}
-
-#nomJoueur
-{
-	padding-left:30%;
-	font-size: 2.4vmin;
-}
-
-#nomAdversaire
-{
-	padding-left:25%;
-	font-size: 2.4vmin;
-}
-		
-@keyframes arc-en-ciel /*animation qui change la couleur du background comme un arc en ciel et la couleur d'écriture comme l'opposé*/
-{
-	0% {background-color: #FF0000;color:#00FFFF}
-	20% {background-color: #FF7F00;color:#0080FF}
-	35%  {background-color: #FFFF00;color:#0000FF}
-	50% {background-color: #00FF00;color:#FF00FF}
-	65% {background-color: #0000FF;color:#FFFF00}
-	80% {background-color: #4B0082;color:#B4FF7D}
-	100% {background-color: #9400D3;color:#6BFF2C}
-}
-		
-#vitesse /*animation de la vitesse*/
-{
-	max-width:5%;
-	position: fixed;
-	border-radius:100%;
-	top:0px;
-	margin-left:1px;
-	font-size:8vmin;
-
-	animation-name: arc-en-ciel;
-	animation-timing-function:linear;
-	animation-duration: 7s;
-	animation-iteration-count: infinite;
-	animation-direction:alternate;
-}
-
-html 
-{
-	height: 100%;
-}
-
-#canevas /*enleve le curseur pour une meilleure immersion*/
-{
-	cursor: none;
-}
-
-body 
-{
-	position:relative;
-	min-height: 100%;
-	max-height: 100%;
-	height:100%;
-	margin:0;
-	padding:0;
-	background-color:#33AAFF;
-}
-
-canvas
-{
-  position:absolute;
-  display:block;
-  /*
-  Pour que le text soit au dessus du canvas
-  */
-  z-index:990;
-}
-
-/*
-Définition relative à la navigation
-*/
-a
-{
-  display:block;
-}
-
-.menu
-{
-  position:absolute;
-  font-size:3vmin;
-  top:15%;
-  /*
-  Pour que le text soit au dessus du canvas
-  */
-  z-index:999;  
-}
-
-#animationFuseeSVG
-{
-	z-index:-1;  
-	position:fixed;
-	left:0px;
-	bottom:40%;
-	max-width: 5%;
-	width:1%;
-}
-
-svg{ 
-	position:relative;
-	left:0px;
-	bottom:0%;
-	max-width: 5%;
-	width:1%;
-}
-
-svg *{
-	
-	z-index:-1;  
-	position:relative;
-	left:0px;
-	top:0px;
-}
-
 #rocket {
     display: block;
 }
-
 /*=============================================
 [ Inactive State Styles ]
 ==============================================*/
@@ -176,6 +58,7 @@ svg *{
 #rocket .rocket-base { fill: #34495e }
 #rocket .rocket-shadow { fill: #34495e}
 #rocket .wing-base { fill: #34495e }
+
 /*=============================================
 [ Clicked Styles ]
 ==============================================*/
@@ -634,3 +517,6 @@ svg *{
     -o-transform-origin: bottom;
     transform-origin: bottom;
 }
+
+
+</style>
