@@ -102,6 +102,21 @@ svg{
     bottom:10%;
 }
 
+@keyframes etirer /*animation qui change la couleur du background comme un arc en ciel et la couleur d'écriture comme l'opposé*/
+{
+    from {transform: translate(0px, +10px) scale(0.5);opacity:0}
+    to {transform: scale(1) translate(+10px, -10px) rotate(-3deg);opacity:1}
+}
+
+ellipse
+{
+    animation-name: etirer;
+	animation-timing-function:linear;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+	animation-direction:alternate;
+}
+
 ellipse:hover
 {
     fill:url(#grad2);
