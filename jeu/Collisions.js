@@ -10,7 +10,8 @@ function testerCollisions(coordonneesBalle, coordonneesJoueur)
 	{
 		if(!coordonneesJoueur.explose)
 		{
-			if(pythagore(coordonneesJoueur.horizontal-coordonneesBalle.x,coordonneesJoueur.vertical-coordonneesBalle.y)<=(constantes.rayonBalle+constantes.rayonJoueur))
+			if(Math.abs(coordonneesJoueur.horizontal-coordonneesBalle.x) <= (constantes.rayonBalle+constantes.rayonJoueur) && 
+			Math.abs(coordonneesJoueur.vertical-coordonneesBalle.y) <= (constantes.rayonBalle+constantes.rayonJoueur))
 			{
 				window.dispatchEvent(window.Evenement.mortJoueur);
 			}

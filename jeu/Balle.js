@@ -20,7 +20,7 @@ var Balle = function(scene)
 	var immunisee;
 	var vitesseHTML;
 
-	var infosBalle = {};
+	var deplacementBalle = {};
 	var positionBalle = {};
 
 	var listeNomsVariables = [];
@@ -30,10 +30,10 @@ var Balle = function(scene)
     var initialiser = function()
     {
 		listeNomsVariables.push("positionBalle");
-		listeNomsVariables.push("infosBalle");
+		listeNomsVariables.push("deplacementBalle");
 
 		listeValeursVariables.push(positionBalle);
-		listeValeursVariables.push(infosBalle);
+		listeValeursVariables.push(deplacementBalle);
 
 		chargementCompletBalle = document.createEvent('Event');
 		chargementCompletBalle.initEvent('chargementCompletBalle', true, true);
@@ -75,15 +75,17 @@ var Balle = function(scene)
 		deplacementY = vitesse*Math.sin(angle);
 	}
 
-	var envoyerInformationsAuServeur = function()
+	var calculerAngles = function()
 	{
-		infosBalle.vitesse=vitesse;
-		infosBalle.angle=angle;
+		vitesse=pythagore(deplacementX,deplacementY);
+		vitesse=Math.floor(vitesse);
 
-		positionBalle.horizontal = Math.round(animationBalle.x);
-		positionBalle.vertical = Math.round(animationBalle.y);
+		angle=Math.acos(deplacementX/vitesse);
 
-		changerVariablesServeur(listeNomsVariables,listeValeursVariables);
+		if(deplacementY<0)
+			angle*=-1;
+		
+		angle=traiterAngle(angle);
 	}
 	
 	var demarrerAnimation = function(evenemnt)
@@ -108,6 +110,17 @@ var Balle = function(scene)
     //constructeur
     initialiser();
 
+	this.envoyerInformationsAuServeur = function()
+	{
+		deplacementBalle.horizontal=deplacementX;
+		deplacementBalle.vertical=deplacementY;
+
+		positionBalle.horizontal = animationBalle.x+Balle.Configuration.diametre/2;
+		positionBalle.vertical = animationBalle.y+Balle.Configuration.diametre/2;
+
+		changerVariablesServeur(listeNomsVariables,listeValeursVariables);
+	}
+
 	this.commencer = function()
 	{
 		vitesse = Balle.Configuration.vitesseDepart;
@@ -116,11 +129,11 @@ var Balle = function(scene)
 		animationBalle.x = scene.canvas.width/2;
 		animationBalle.y = scene.canvas.height/2;
 
-		envoyerInformationsAuServeur();
+		calculerDeplacements();
+
+		balle.envoyerInformationsAuServeur();
 
 		window.dispatchEvent(window.Evenement.changementVitesse);
-
-		calculerDeplacements();
 	}
     
     //ICI c'est public
@@ -185,23 +198,23 @@ var Balle = function(scene)
 
 			window.dispatchEvent(window.Evenement.changementVitesse);
 
-			envoyerInformationsAuServeur();
-
 			calculerDeplacements();
+
+			balle.envoyerInformationsAuServeur();
 		}
 	}
 
-	this.recevoirCoordonneesServeur = function(infosBalle, positionBalle)
+	this.recevoirCoordonneesServeur = function(deplacementBalle, positionBalle)
 	{
-		vitesse=infosBalle.vitesse;
-		angle=infosBalle.angle;
+		deplacementX=deplacementBalle.horizontal;
+		deplacementY=deplacementBalle.vertical;
 
-		animationBalle.x = positionBalle.horizontal;
-		animationBalle.y = 	positionBalle.vertical;
+		animationBalle.x = positionBalle.horizontal-Balle.Configuration.diametre/2;
+		animationBalle.y = 	positionBalle.vertical-Balle.Configuration.diametre/2;
+
+		calculerAngles();
 
 		window.dispatchEvent(window.Evenement.changementVitesse);
-
-		calculerDeplacements();
 	}
 
 	this.getCoordonnees = function()

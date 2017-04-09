@@ -39,7 +39,7 @@
 	border-radius:100%;
 	top:0px;
 	margin-left:1px;
-	font-size:8vmin;
+	font-size:5vmin;
 
 	animation-name: arc-en-ciel;
 	animation-timing-function:linear;
@@ -102,7 +102,7 @@ svg{
     bottom:10%;
 }
 
-@keyframes etirer /*animation qui change la couleur du background comme un arc en ciel et la couleur d'écriture comme l'opposé*/
+@keyframes bouger
 {
     from {transform: translate(0px, +10px) scale(0.5);opacity:0}
     to {transform: scale(1) translate(+10px, -10px) rotate(-3deg);opacity:1}
@@ -110,7 +110,7 @@ svg{
 
 ellipse
 {
-    animation-name: etirer;
+    animation-name: bouger;
 	animation-timing-function:linear;
 	animation-duration: 1s;
 	animation-iteration-count: infinite;

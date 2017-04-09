@@ -33,7 +33,13 @@ var Joueur = function(scene, numero)
 
 	this.envoyerCoordonneesAuServeur = function()
 	{
-		positionJoueur=joueur.getCoordonnees();
+		positionJoueur.horizontal = cercle.x;
+		positionJoueur.vertical = cercle.y;
+		
+		if(explose!=true)
+			positionJoueur.explose = false;
+		else
+			positionJoueur.explose = true;
 		
 		if(numero==1)
 			changerVariablesServeur('positionJoueur1', positionJoueur);

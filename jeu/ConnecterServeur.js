@@ -9,7 +9,7 @@ var ConnecterServeur = function()
 	configuration.zone = "Univers";
 	configuration.room = "Galaxie";
 
-	var infosBalle = {};
+	var deplacementBalle = {};
 	var positionJoueur1 = {};
 	var positionJoueur2 = {};
 	var positionBalle = {};
@@ -122,13 +122,13 @@ var ConnecterServeur = function()
 			var listeNomsVariables = [];
 			var listeValeursVariables = [];
 
-			infosBalle = {};
+			deplacementBalle = {};
 
-			infosBalle.vitesse=0;
-			infosBalle.angle=0;
+			deplacementBalle.horizontal=0;
+			deplacementBalle.vertical=0;
 
-			listeNomsVariables.push('infosBalle');
-			listeValeursVariables.push(infosBalle);
+			listeNomsVariables.push('deplacementBalle');
+			listeValeursVariables.push(deplacementBalle);
 
 			positionBalle = {};
 
@@ -173,14 +173,13 @@ var ConnecterServeur = function()
 
 			for(var i=0 ; i<evenement.changedVars.length ; i++)
 			{
-				if(evenement.changedVars[i]=="infosBalle")
+				if(evenement.changedVars[i]=="deplacementBalle")
 				{
-					infosBalle=evenement.room.getVariable(evenement.changedVars[i]).value;
+					deplacementBalle=evenement.room.getVariable(evenement.changedVars[i]).value;
 
 					window.dispatchEvent(window.Evenement.impactBalle);
 
-					tracer("vitesse de la balle = " + infosBalle.vitesse + " angle de la balle = " + infosBalle.angle);
-					
+					tracer("deplacement de la balle x=" + deplacementBalle.horizontal + " y=" + deplacementBalle.vertical);					
 				}
 
 				else if(evenement.changedVars[i]=="positionBalle")
@@ -270,9 +269,9 @@ var ConnecterServeur = function()
 		return etat;
 	}
 
-	this.getInfosBalle = function()
+	this.getDeplacementBalle = function()
 	{
-		return infosBalle;
+		return deplacementBalle;
 	}
 
 	this.getNumeroJoueur = function()

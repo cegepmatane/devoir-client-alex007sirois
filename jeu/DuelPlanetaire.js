@@ -140,10 +140,11 @@ function Jeu()
 			break;
 
 			case window.Evenement.mortJoueur.type:
-					if(numeroJoueur==1)
+					/*if(numeroJoueur==1)
 						changerVariablesServeur("etat", "mort joueur 1");
 					else if(numeroJoueur==2)
-						changerVariablesServeur("etat", "mort joueur 2");
+						changerVariablesServeur("etat", "mort joueur 2");*/
+					balle.envoyerInformationsAuServeur();
 			break;
 			case window.Evenement.mortJoueur2.type:
 				if(numeroJoueur==1)
@@ -167,7 +168,7 @@ function Jeu()
 
 			case window.Evenement.impactBalle.type:
 				if(ignorerProchainImpactBalle);
-					balle.recevoirCoordonneesServeur(serveur.getInfosBalle(), serveur.getPositionBalle());
+					balle.recevoirCoordonneesServeur(serveur.getDeplacementBalle(), serveur.getPositionBalle());
 
 				ignorerProchainImpactBalle=false;
 			break;
