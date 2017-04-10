@@ -166,7 +166,6 @@ var ConnecterServeur = function()
 			window.dispatchEvent(window.Evenement.serveurPret);
 		}
 
-		//y me manque de la shit ici
 
 		var executerApresVariableDeSalon = function(evenement)
 		{
