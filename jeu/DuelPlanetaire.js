@@ -101,7 +101,7 @@ function Jeu()
 				if(numeroJoueur==1 && vitesseBalle==0)
 					{
 						ignorerProchainImpactBalle=true;
-						balle.commencer();
+						balle.commencerMouvement();
 					}
 				break;
 

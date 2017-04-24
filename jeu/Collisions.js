@@ -1,11 +1,11 @@
-var constantes =
-{
-	rayonBalle :32,
-	rayonJoueur : 25
-}
-
 function testerCollisions(coordonneesBalle, coordonneesJoueur)
 {
+	var constantes =
+	{
+		rayonBalle :32,
+		rayonJoueur : 25
+	}
+
 	if(coordonneesBalle!=null && coordonneesJoueur!=null)
 	{
 		if(!coordonneesJoueur.explose)

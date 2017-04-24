@@ -21,11 +21,6 @@ var ConnecterServeur = function()
 
 	this.initialiserServeur = function(nom)
 	{
-		$(document).ready(function()
-		{
-			tracer('jquery.ready()');    
-		});
-
 		var initialiser = function()
 		{
 			tracer('onload -> initialiser()');
@@ -77,7 +72,8 @@ var ConnecterServeur = function()
 
 		var executerApresErreureLogin = function(evenement)
 		{
-			tracer("probleme login", false);
+			tracer("probleme login" + evenement.errorMessage, false);
+
 			nom+=""+1;
 			ouvrirSession();
 		}

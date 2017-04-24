@@ -121,7 +121,7 @@ var Balle = function(scene)
 		changerVariablesServeur(listeNomsVariables,listeValeursVariables);
 	}
 
-	this.commencer = function()
+	this.commencerMouvement = function()
 	{
 		vitesse = Balle.Configuration.vitesseDepart;
 		angle = (Math.random() * Math.PI * 2);
