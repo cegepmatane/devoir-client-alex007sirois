@@ -1,72 +1,68 @@
+var serveur=null;
+
 var ConnecterServeur = function()
 {
-	var classeServeur = /*"smartfox"*/"node";
+	var classeServeur = "smartfox"/*node smartfox*/;
 	
 	this.initialiserServeur = function(nom)
 	{
-		
+		if(classeServeur=="node")
+		{
+			serveur = new CommuniquerServeurNode();
+		}
+		if(classeServeur=="smartfox")
+		{
+			serveur = new CommuniquerServeurSmartfox();
+		}
+		if(serveur!=null)
+			serveur.initialiserServeur(nom);
 	}
 	
 	this.quitterSeveur = function()
 	{
-		
+		serveur.quitterSeveur();
 	}
 	
 	this.getNomJoueur = function()
 	{
-		return utilisateur.name;
+		return serveur.getNomJoueur();
 	}
 
 	this.getNomAdversaire = function()
 	{
-		var listeJoueur=salle.getPlayerList();
-
-		var nom="";
-
-		listeJoueur.forEach(function(joueur) 
-		{
-			if(!joueur.isItMe)
-			{
-				nom= joueur.name;
-				return nom;
-			}
-		});
-
-		return nom;
+		return serveur.getNomAdversaire();
 	}
 
 	this.getPositionAutreJoueur = function()
 	{
-		if(numeroJoueur==2)
-			return positionJoueur1;
-		else if(numeroJoueur==1)
-			return positionJoueur2;
+		return serveur.getPositionAutreJoueur();
 	}
 
 	this.getEtat = function()
 	{
-		return etat;
+		return serveur.getEtat();
 	}
 
 	this.getDeplacementBalle = function()
 	{
-		return deplacementBalle;
+		return serveur.getDeplacementBalle();
 	}
 
 	this.getNumeroJoueur = function()
 	{
-		return numeroJoueur;
+		return serveur.getNumeroJoueur();
 	}
 
 	this.getPositionBalle = function()
 	{
-		return positionBalle;
+		return serveur.getPositionBalle();
 	}
 }
 
 function changerVariablesServeur(noms, valeurs)
 {
-	
+	if(serveur!=null)
+		serveur.changerVariablesServeur(noms, valeurs);
 }
 
 function tracer(message, alerte)

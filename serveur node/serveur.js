@@ -21,6 +21,8 @@ serveurChat.on('request', function(requete)
 	connection.id = nombreClients+1;
 	listeClients[nombreClients++] = connection;
 	
+	connection.sendUTF(""+connection.id);
+	
 	connection.on('message', function(message)
 	{
 		console.log('message');

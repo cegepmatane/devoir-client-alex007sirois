@@ -1,5 +1,6 @@
 var CommuniquerServeurSmartfox = function()
 {
+	var moi = this;
 	var serveur;
 	
 	var configuration = {};
@@ -86,6 +87,34 @@ var CommuniquerServeurSmartfox = function()
 			tracer("L'usager: " + utilisateur.name + " est dans la zone " + evenement.zone);
 			entrerSalon();
 		}
+		
+		this.changerVariablesServeur = function(noms, valeurs)
+		{
+			if(serveur!=null)
+			{
+				var listeVariables = [];
+				if(noms.constructor === Array && valeurs.constructor === Array && noms.length==valeurs.length)
+				{
+					for(var i=0 ; i<noms.length ; i++)
+						if(typeof noms[i] == 'string')
+							listeVariables.push(new SFS2X.Entities.Variables.SFSRoomVariable(noms[i], valeurs[i]));
+				}
+				else if(typeof noms == 'string')
+					listeVariables.push(new SFS2X.Entities.Variables.SFSRoomVariable(noms, valeurs));
+
+				if(listeVariables.length>0)
+				{
+					var succes = serveur.send(new SFS2X.Requests.System.SetRoomVariablesRequest(listeVariables));
+						
+
+					//tracer(listeVariables.length + ' valeurs changées : ' + succes);
+				}
+				else
+					tracer("aucune valeur changée: il y a erreur");
+			}
+			else
+				tracer("serveur non-initialisé");
+		}
 
 		var entrerSalon = function()
 		{
@@ -158,7 +187,7 @@ var CommuniquerServeurSmartfox = function()
 			listeNomsVariables.push('etat');
 			listeValeursVariables.push(etat);
 			
-			changerVariablesServeur(listeNomsVariables, listeValeursVariables);
+			moi.changerVariablesServeur(listeNomsVariables, listeValeursVariables);
 			window.dispatchEvent(window.Evenement.serveurPret);
 		}
 
@@ -279,31 +308,5 @@ var CommuniquerServeurSmartfox = function()
 		return positionBalle;
 	}
 	
-	this.changerVariablesServeur = function(noms, valeurs)
-	{
-		if(serveur!=null)
-		{
-			var listeVariables = [];
-			if(noms.constructor === Array && valeurs.constructor === Array && noms.length==valeurs.length)
-			{
-				for(var i=0 ; i<noms.length ; i++)
-					if(typeof noms[i] == 'string')
-						listeVariables.push(new SFS2X.Entities.Variables.SFSRoomVariable(noms[i], valeurs[i]));
-			}
-			else if(typeof noms == 'string')
-				listeVariables.push(new SFS2X.Entities.Variables.SFSRoomVariable(noms, valeurs));
-
-			if(listeVariables.length>0)
-			{
-				var succes = serveur.send(new SFS2X.Requests.System.SetRoomVariablesRequest(listeVariables));
-					
-
-				//tracer(listeVariables.length + ' valeurs changées : ' + succes);
-			}
-			else
-				tracer("aucune valeur changée: il y a erreur");
-		}
-		else
-			tracer("serveur non-initialisé");
-	}
+	
 }

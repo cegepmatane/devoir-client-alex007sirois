@@ -1,5 +1,6 @@
 var CommuniquerServeurNode = function()
 {
+	var moi = this;
 	var serveur;
 	
 	var deplacementBalle = {};
@@ -8,12 +9,21 @@ var CommuniquerServeurNode = function()
 	var positionBalle = {};
 	var etat;
 	
-	this.initialiserServeur = function(nom)
+	var numeroJoueur;
+	var nom;
+	
+	this.initialiserServeur = function(n)
 	{
+		nom=n;
+		numeroJoueur=2;
+		
 		serveur = new WebSocket('ws://localhost:2628','variable');
-		serveur.onclose = this.quitterSeveur();
-		serveur.onmessage = recevoirVariableServeur(evenement);
-		serveur.onerror = gererErreure(error);
+
+		serveur.onmessage = function(event){recevoirVariableServeur(event)};
+		serveur.onerror = function(event){gererErreure(event)};
+		serveur.onclose = function(event){moi.quitterSeveur()};
+		
+		serveur.onopen = function(event){window.dispatchEvent(window.Evenement.serveurPret)};
 	}
 	
 	var gererErreure = function (error) 
@@ -27,11 +37,11 @@ var CommuniquerServeurNode = function()
 		serveur=null;
 	}
 	
-	this.changerVariableServeur = function(noms, valeurs)
+	this.changerVariablesServeur = function(noms, valeurs)
 	{
 		if(serveur!=null)
 		{
-			let listeVariables = [];
+			var listeVariables = [];
 			
 			if(noms.constructor === Array && valeurs.constructor === Array && noms.length==valeurs.length)
 			{
@@ -57,19 +67,13 @@ var CommuniquerServeurNode = function()
 			if(listeVariables.length>0)
 			{
 				for(variable in listeVariables)
-				{
-					serveur.send(vari);
-				}
+					serveur.send(variable);
 			}
 			else
 				tracer("aucune valeur changée: il y a erreur");
 		}
 		else
 			tracer("serveur non-initialisé");
-		
-		console.log(variable);
-	
-		socket.send(variable);
 	}
 	
 	var recevoirVariableServeur = function(evenement)
@@ -129,25 +133,12 @@ var CommuniquerServeurNode = function()
 	
 	this.getNomJoueur = function()
 	{
-		return utilisateur.name;
+		return nom;
 	}
 
 	this.getNomAdversaire = function()
 	{
-		var listeJoueur=salle.getPlayerList();
-
-		var nom="";
-
-		listeJoueur.forEach(function(joueur) 
-		{
-			if(!joueur.isItMe)
-			{
-				nom= joueur.name;
-				return nom;
-			}
-		});
-
-		return nom;
+		return "mechant";
 	}
 
 	this.getPositionAutreJoueur = function()
